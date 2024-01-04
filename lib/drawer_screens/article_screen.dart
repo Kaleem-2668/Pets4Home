@@ -1,8 +1,9 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/drawer_screens/article_info_screen.dart';
-import 'package:pets_4_home/models/article_model.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../models/article_model.dart';
+import 'article_info_screen.dart';
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({Key? key}) : super(key: key);
@@ -12,27 +13,51 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
+  bool enable = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  loadData() async {
+    await Future.delayed(const Duration(seconds: 5));
+    setState(() {
+      enable = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back), onPressed: () {
+          Navigator.pop(context);
+        },
+
+        ),
+        title: TextFormField(
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 15),
+            hintText: 'Search for your articles...',
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.green.shade900,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
+      ),
       body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
             const SizedBox(
               height: 20,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(vertical: 15),
-                hintText: 'Search for your articles...',
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Colors.green.shade900,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
             ),
 
             const SizedBox(
@@ -42,8 +67,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
               children: [
                 CarouselSlider(
                   options: CarouselOptions(
-                    // height: 200.0,
-
                     enableInfiniteScroll: true,
                     autoPlay: true,
                     autoPlayInterval: const Duration(seconds: 4),
@@ -72,67 +95,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     );
                   }).toList(),
                 ),
-                // Stack(
-                //   children: [
-                //     const ClipRRect(
-                //       borderRadius: BorderRadius.all(Radius.circular(20)),
-                //       child: Image(
-                //         image: AssetImage('images/slider_images/dogArt.jpg'),
-                //         fit: BoxFit.cover,
-                //       ),
-                //     ),
-                //     Positioned(
-                //       bottom: 30,
-                //       left: 20,
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           InkWell(
-                //             onTap: (){},
-                //             child: Container(
-                //               decoration: BoxDecoration(
-                //                 borderRadius: BorderRadius.circular(15),
-                //                 color: Colors.green.shade100,
-                //               ),
-                //               child: const Padding(
-                //                 padding: EdgeInsets.symmetric(horizontal: 6.0),
-                //                 child: Text('DOGS'),
-                //               ),
-                //             ),
-                //           ),
-                //           const SizedBox(width: 5,),
-                //           InkWell(
-                //             onTap: (){},
-                //             child: Container(
-                //               decoration: BoxDecoration(
-                //                 borderRadius: BorderRadius.circular(15),
-                //                 color: Colors.green.shade100,
-                //               ),
-                //               child: const Padding(
-                //                 padding: EdgeInsets.symmetric(horizontal: 6.0),
-                //                 child: Text('GENERAL'),
-                //               ),
-                //             ),
-                //           ),
-                //           const SizedBox(width: 5,),
-                //           InkWell(
-                //             onTap: (){},
-                //             child: Container(
-                //               decoration: BoxDecoration(
-                //                 borderRadius: BorderRadius.circular(15),
-                //                 color: Colors.green.shade100,
-                //               ),
-                //               child: const Padding(
-                //                 padding: EdgeInsets.symmetric(horizontal: 6.0),
-                //                 child: Text('BREED FACTS'),
-                //               ),
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ],
-                // ),
               ],
             ),
             const SizedBox(
@@ -142,53 +104,98 @@ class _ArticleScreenState extends State<ArticleScreen> {
               child: ListView.builder(
                 itemCount: articleModelList.length,
                 itemBuilder: (context, index) {
-                  final articleList=articleModelList[index];
+                  final articleList = articleModelList[index];
                   return InkWell(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                        return  ArticleInfo(
-                          aritcleModelList:articleList,
-                        );
-                      }));
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) {
+                            return ArticleInfo(
+                              articleModelList: articleList,
+                            );
+                          },
+                        ),
+                      );
                     },
-                    child: Card(
-                      elevation: 0.5,
-                      shadowColor: Colors.grey.shade200,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image(
-                            image: AssetImage(articleList.imageUrl),
-                            height: 80,
-                            width: 80,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                        title: Text(
-                          articleList.titleText,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          articleList.subtitleText,
-                          style: const TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.bold),
-                        ),
-                        trailing: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(articleList.trailingText),
-                        ),
-                      ),
-                    ),
+                    child: enable
+                        ? Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade200,
+                            child: _buildShimmerCard(),
+                          )
+                        : _buildArticleCard(articleList),
                   );
                 },
               ),
             ),
-          ])),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Card(
+      elevation: 0.5,
+      shadowColor: Colors.grey.shade200,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          height: 80,
+          width: 80,
+          color: Colors.white,
+        ),
+        title: Container(
+          height: 15,
+          color: Colors.white,
+        ),
+        subtitle: Container(
+          height: 13,
+          color: Colors.white,
+        ),
+        trailing: Container(
+          width: 50,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticleCard(ArticleModel articleList) {
+    return Card(
+      elevation: 0.5,
+      shadowColor: Colors.grey.shade200,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Image(
+            image: AssetImage(articleList.imageUrl),
+            height: 80,
+            width: 80,
+            fit: BoxFit.fill,
+          ),
+        ),
+        title: Text(
+          articleList.titleText,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          articleList.subtitleText,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Text(articleList.trailingText),
+        ),
+      ),
     );
   }
 }
