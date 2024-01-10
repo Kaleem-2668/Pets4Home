@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
-import 'package:pets_4_home/screens/home/home_info_screen.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../drawer_screens/article_screen.dart';
+import '../drawer/article_screen.dart';
+import 'home_info_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -38,27 +37,19 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {
-              // Implement search functionality
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // Implement notifications functionality
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Implement settings functionality
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {
-              // Implement user profile functionality
-            },
+            onPressed: () {},
           ),
         ],
         title: const Text('Home Screen'),
@@ -84,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
-                // Navigate to the home screen or perform an action
                 Navigator.pop(context);
               },
             ),
@@ -147,11 +137,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        onTap: () {
+                          showSearch(context: context, delegate: Search());
+                        },
                         decoration: InputDecoration(
-                          contentPadding:
-                          const EdgeInsets.symmetric(vertical: 15),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 15),
                           hintText: 'What are you looking for?',
-                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: InkWell(
+                              onTap: () => showSearch(
+                                  context: context, delegate: Search()),
+                              child: const Icon(Icons.search)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
@@ -167,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller: _locationController,
                               decoration: InputDecoration(
                                 contentPadding:
-                                const EdgeInsets.symmetric(vertical: 15),
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 hintText: 'Select location',
                                 prefixIcon: const Icon(Icons.location_on),
                                 suffixIcon: const Icon(
@@ -317,7 +313,8 @@ class _HomeScreenState extends State<HomeScreen> {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: GridView.builder(
-        itemCount: 6, // Adjust the count as needed
+        itemCount: breedCategoryModel.length,
+        // Adjust the count as needed
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -470,3 +467,176 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// class Search extends SearchDelegate {
+//   List<BreedCategoryModel> data=breedCategoryModel;
+//   List<String> recentSearch = [];
+//
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [IconButton(onPressed: () {
+//       query ="";
+//     }, icon: Icon(Icons.clear))];
+//   }
+//
+//   @override
+//   Widget buildLeading(BuildContext context) {
+//     return IconButton(
+//         onPressed: () {
+//           Navigator.pop(context);
+//         },
+//         icon: Icon(Icons.arrow_back));
+//   }
+//
+//   @override
+//   Widget buildResults(BuildContext context) {
+//     List<BreedCategoryModel> searchResults = data
+//         .where((breed) => breed.titleText.toLowerCase().contains(query.toLowerCase()))
+//         .toList();
+//
+//     if (query.isNotEmpty && searchResults.isNotEmpty) {
+//       return ListView.builder(
+//         itemCount: searchResults.length,
+//         itemBuilder: (context, index) {
+//           return ListTile(
+//             title: Text(searchResults[index].titleText),
+//             onTap: () {
+//               // Handle item tap
+//             },
+//           );
+//         },
+//       );
+//     } else if (query.isEmpty) {
+//       return const Text('');
+//     } else {
+//       return const ListTile(
+//         title: Text('No data found'),
+//       );
+//     }
+//   }
+//
+//   @override
+//   Widget buildSuggestions(BuildContext context) {
+//     List<String> filteredSuggestions = recentSearch
+//         .where((suggestion) => suggestion.toLowerCase().contains(query.toLowerCase()))
+//         .toList();
+//
+//     return ListView.builder(
+//       itemCount: filteredSuggestions.length,
+//       itemBuilder: (context, index) {
+//         return ListTile(
+//           title: Text(filteredSuggestions[index]),
+//           onTap: () {
+//             query = filteredSuggestions[index];
+//             showResults(context);
+//           },
+//         );
+//       },
+//     );
+//   }
+// }
+class Search extends SearchDelegate {
+  List<BreedCategoryModel> data = breedCategoryModel;
+  List<String> recentSearch = [];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+          onPressed: () {
+            query = "";
+          },
+          icon: const Icon(Icons.clear))
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      icon: const Icon(Icons.arrow_back),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    List<BreedCategoryModel> searchResults = data
+        .where((breed) =>
+            breed.titleText.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    if (query.isNotEmpty && searchResults.isNotEmpty) {
+      return ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(
+                  breedCategoryModel[index].imageUrl,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                )),
+            title: Text(searchResults[index].titleText),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (ctx) => HomeInfo(
+                    breedCategoryModel: searchResults[index],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    } else if (query.isEmpty) {
+      return const Text('');
+    } else {
+      return const ListTile(
+        title: Text('No data found'),
+      );
+    }
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<BreedCategoryModel> filteredSuggestions = data
+        .where((breed) =>
+            breed.titleText.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: filteredSuggestions.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.asset(
+              filteredSuggestions[index].imageUrl,
+              height: 70,
+              width: 70,
+              fit: BoxFit.cover,
+            ),
+          ),
+          title: Text(filteredSuggestions[index].titleText),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => HomeInfo(
+                  breedCategoryModel: filteredSuggestions[index],
+                ),
+              ),
+            );
+            // query = filteredSuggestions[index].titleText;
+            // showResults(context);
+          },
+        );
+      },
+    );
+  }
+}

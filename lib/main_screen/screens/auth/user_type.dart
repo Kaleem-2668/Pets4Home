@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-
-import '../widgets/constant_button.dart';
+import '../../../widgets/constant_button.dart';
 import 'otp_screen.dart';
 
 class UserType extends StatefulWidget {

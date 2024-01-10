@@ -2,10 +2,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pets_4_home/screens/bottom_navigation_screen.dart';
-import 'package:pets_4_home/screens/user_type.dart';
+import 'package:pets_4_home/main_screen/screens/auth/user_type.dart';
 import 'package:pinput/pinput.dart';
 import 'package:svg_flutter/svg.dart';
+
+import '../../bottom_navigation_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({Key? key, required this.phoneNumber,required this.verificationId,required this.userName}) : super(key: key);

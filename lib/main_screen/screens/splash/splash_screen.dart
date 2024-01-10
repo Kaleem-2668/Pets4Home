@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pets_4_home/screens/bottom_navigation_screen.dart';
+import '../../bottom_navigation_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -89,3 +89,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

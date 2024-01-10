@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/screens/signup_screen.dart';
+import 'package:pets_4_home/main_screen/screens/auth/signup_screen.dart';
 
-
-import '../widgets/constant_button.dart';
+import '../../../widgets/constant_button.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);

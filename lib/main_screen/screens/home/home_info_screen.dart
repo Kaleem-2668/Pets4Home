@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 
@@ -14,14 +13,15 @@ class _HomeInfoState extends State<HomeInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image(
                 image:
-                    AssetImage(widget.breedCategoryModel!.imageUrl.toString()),
+                AssetImage(widget.breedCategoryModel!.imageUrl.toString()),
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 300,
@@ -248,7 +248,7 @@ class _HomeInfoState extends State<HomeInfo> {
                     ),
                     const Text(
                       'Details',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),
                     ),
                     const Row(
                       children: [
@@ -270,7 +270,7 @@ class _HomeInfoState extends State<HomeInfo> {
                     ),
                     Row(
                       children: [
-                        Expanded(child: const Text('Adv.Location')),
+                        const Expanded(child: Text('Adv.Location')),
                         Expanded(
                           child: Text(
                             'Winchmore Hill, London',
@@ -287,7 +287,7 @@ class _HomeInfoState extends State<HomeInfo> {
                     ),
                     Row(
                       children: [
-                        Expanded(child: const Text('Breed')),
+                        const Expanded(child: Text('Breed')),
                         Expanded(
                             child: Text(
                           'British shorthair',
@@ -313,10 +313,20 @@ class _HomeInfoState extends State<HomeInfo> {
                         Expanded(child: Text('Neutered')),
                         Expanded(child: Text('no')),
                       ],
-                    )
+                    ),
+                    const Divider(
+                      thickness: 1,
+                    ),
+                    const Text('Description',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),),
+                    const SizedBox(height: 10,),
+                    const Text('This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'
+                        'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'),
+
                   ],
                 ),
               ),
+
+
             ],
           ),
         ),

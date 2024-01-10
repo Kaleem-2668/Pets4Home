@@ -1,8 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../models/article_model.dart';
+import '../../../models/article_model.dart';
 import 'article_info_screen.dart';
 
 class ArticleScreen extends StatefulWidget {

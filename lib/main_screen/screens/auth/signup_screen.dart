@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/screens/user_type.dart';
+import 'package:pets_4_home/main_screen/screens/auth/user_type.dart';
 
-import '../widgets/constant_button.dart';
+import '../../../widgets/constant_button.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);

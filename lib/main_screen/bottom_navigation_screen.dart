@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/screens/home/home_screen.dart';
-import 'package:pets_4_home/screens/user/user_screen.dart';
+import 'package:pets_4_home/main_screen/screens/user/user_screen.dart';
+import 'screens/home/home_screen.dart';
 
 class BottomBarScreen extends StatefulWidget {
   const BottomBarScreen({Key? key}) : super(key: key);
