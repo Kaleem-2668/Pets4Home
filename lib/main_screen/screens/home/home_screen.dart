@@ -467,77 +467,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// class Search extends SearchDelegate {
-//   List<BreedCategoryModel> data=breedCategoryModel;
-//   List<String> recentSearch = [];
-//
-//   @override
-//   List<Widget>? buildActions(BuildContext context) {
-//     return [IconButton(onPressed: () {
-//       query ="";
-//     }, icon: Icon(Icons.clear))];
-//   }
-//
-//   @override
-//   Widget buildLeading(BuildContext context) {
-//     return IconButton(
-//         onPressed: () {
-//           Navigator.pop(context);
-//         },
-//         icon: Icon(Icons.arrow_back));
-//   }
-//
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     List<BreedCategoryModel> searchResults = data
-//         .where((breed) => breed.titleText.toLowerCase().contains(query.toLowerCase()))
-//         .toList();
-//
-//     if (query.isNotEmpty && searchResults.isNotEmpty) {
-//       return ListView.builder(
-//         itemCount: searchResults.length,
-//         itemBuilder: (context, index) {
-//           return ListTile(
-//             title: Text(searchResults[index].titleText),
-//             onTap: () {
-//               // Handle item tap
-//             },
-//           );
-//         },
-//       );
-//     } else if (query.isEmpty) {
-//       return const Text('');
-//     } else {
-//       return const ListTile(
-//         title: Text('No data found'),
-//       );
-//     }
-//   }
-//
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     List<String> filteredSuggestions = recentSearch
-//         .where((suggestion) => suggestion.toLowerCase().contains(query.toLowerCase()))
-//         .toList();
-//
-//     return ListView.builder(
-//       itemCount: filteredSuggestions.length,
-//       itemBuilder: (context, index) {
-//         return ListTile(
-//           title: Text(filteredSuggestions[index]),
-//           onTap: () {
-//             query = filteredSuggestions[index];
-//             showResults(context);
-//           },
-//         );
-//       },
-//     );
-//   }
-// }
 class Search extends SearchDelegate {
   List<BreedCategoryModel> data = breedCategoryModel;
-  List<String> recentSearch = [];
-
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -590,6 +521,7 @@ class Search extends SearchDelegate {
                 ),
               );
             },
+            trailing: Text(searchResults[index].priceText),
           );
         },
       );
@@ -624,17 +556,10 @@ class Search extends SearchDelegate {
           ),
           title: Text(filteredSuggestions[index].titleText),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) => HomeInfo(
-                  breedCategoryModel: filteredSuggestions[index],
-                ),
-              ),
-            );
-            // query = filteredSuggestions[index].titleText;
-            // showResults(context);
+            query = filteredSuggestions[index].titleText;
+            showResults(context);
           },
+          trailing: Text(filteredSuggestions[index].priceText),
         );
       },
     );
