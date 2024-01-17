@@ -45,6 +45,7 @@ dependencies:
   shimmer:
   geolocator:
   permission_handler:
+  backdrop: ^0.9.1
 
 dev_dependencies:
   flutter_test:

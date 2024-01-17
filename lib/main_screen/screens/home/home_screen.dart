@@ -1,8 +1,9 @@
+import 'package:backdrop/backdrop.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
 import 'package:shimmer/shimmer.dart';
-import '../drawer/article_screen.dart';
 import 'home_info_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,211 +32,271 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.green.shade900,
-      appBar: AppBar(
+    return BackdropScaffold(
+      backLayerBackgroundColor: Colors.white,
+
+      appBar: BackdropAppBar(
+        backgroundColor: Colors.green.shade900,
+        leadingWidth: 60,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search,color: Colors.white,),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications,color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.settings,color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.person,color: Colors.white),
             onPressed: () {},
           ),
         ],
-        title: const Text('Home Screen'),
-        centerTitle: true,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Drawer Header',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.article_outlined),
-              title: const Text('Article'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                  return const ArticleScreen();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
+      backLayer: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 30.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 20,
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              child: Text(
-                'A safe start to a lifelong\nfriendship',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 19,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Text(
-                'Connect with trusted breeders and rescues',
-                style: TextStyle(
-                  color: Colors.green.shade700,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.17,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.white,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        onTap: () {
-                          showSearch(context: context, delegate: Search());
-                        },
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
-                          hintText: 'What are you looking for?',
-                          suffixIcon: InkWell(
-                              onTap: () => showSearch(
-                                  context: context, delegate: Search()),
-                              child: const Icon(Icons.search)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _locationController,
-                              decoration: InputDecoration(
-                                contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                hintText: 'Select location',
-                                prefixIcon: const Icon(Icons.location_on),
-                                suffixIcon: const Icon(
-                                    Icons.location_searching_rounded),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade900,
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Search',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'HOME',
+                  style: TextStyle(fontSize: 18),
+                ))),
             const SizedBox(
               height: 10,
             ),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'FEATURED',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'FAVORITE',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'BREED',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'DOGS INFO',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'FAVORITE',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Center(
+                    child: Text(
+                  'ARTICLES',
+                  style: TextStyle(fontSize: 18),
+                ))),
+          ],
+        ),
+      ),
+      frontLayer: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 20,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 90,
-                    child: FutureBuilder(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Text(
+                  'A safe start to a lifelong\nfriendship',
+                  style: TextStyle(
+                    color: Colors.green.shade800,
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Text(
+                  'Connect with trusted breeders and rescues',
+                  style: TextStyle(
+                    color: Colors.green.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.17,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          onTap: () {
+                            showSearch(context: context, delegate: Search());
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
+                            hintText: 'What are you looking for?',
+                            suffixIcon: InkWell(
+                                onTap: () => showSearch(
+                                    context: context, delegate: Search()),
+                                child: const Icon(Icons.search)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _locationController,
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  hintText: 'Select location',
+                                  prefixIcon: const Icon(Icons.location_on),
+                                  suffixIcon: const Icon(
+                                      Icons.location_searching_rounded),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green.shade900,
+                              ),
+                              onPressed: () {},
+                              child: const Text(
+                                'Search',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 90,
+                      child: FutureBuilder(
+                        future: loadData(),
+                        builder: (context, snapshot) {
+                          return enable
+                              ? _buildPetsCategoryShimmer()
+                              : _buildPetsCategoryList();
+                        },
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Recommended for you',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    FutureBuilder(
                       future: loadData(),
                       builder: (context, snapshot) {
                         return enable
-                            ? _buildPetsCategoryShimmer()
-                            : _buildPetsCategoryList();
+                            ? _buildBreedListShimmer()
+                            : _buildBreedCategoryList();
                       },
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Recommended for you',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  FutureBuilder(
-                    future: loadData(),
-                    builder: (context, snapshot) {
-                      return enable
-                          ? _buildBreedListShimmer()
-                          : _buildBreedCategoryList();
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -469,6 +530,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class Search extends SearchDelegate {
   List<BreedCategoryModel> data = breedCategoryModel;
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
