@@ -1,16 +1,25 @@
 import 'package:backdrop/backdrop.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../controller/change_language.dart';
 import 'home_info_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
+}
+
+enum Language {
+  english,
+  arabic,
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -33,26 +42,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BackdropScaffold(
-      backLayerBackgroundColor: Colors.white,
-
+      backLayerBackgroundColor: Colors.green.shade100,
       appBar: BackdropAppBar(
-        backgroundColor: Colors.green.shade900,
+        title: Text(AppLocalizations.of(context)!.helloWorld),
+        backgroundColor: Colors.green.shade800,
         leadingWidth: 60,
         actions: <Widget>[
+          Consumer<ChangeLanguage>(builder: (context, provider, child) {
+            return PopupMenuButton(
+              onSelected: (Language item) {
+                if (Language.english.name == item.name) {
+                  provider.changeLanguage(const Locale('en'));
+                } else {
+                  provider.changeLanguage(const Locale('ar'));
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Language>>[
+                const PopupMenuItem(
+                    value: Language.english, child: Text('english')),
+                const PopupMenuItem(
+                    value: Language.arabic, child: Text('arabic')),
+              ],
+            );
+          }),
           IconButton(
-            icon: const Icon(Icons.search,color: Colors.white,),
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.notifications,color: Colors.white),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.settings,color: Colors.white),
+            icon: const Icon(Icons.settings, color: Colors.white),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.person,color: Colors.white),
+            icon: const Icon(Icons.person, color: Colors.white),
             onPressed: () {},
           ),
         ],
@@ -62,22 +91,38 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Center(
-                    child: Text(
-                  'HOME',
-                  style: TextStyle(fontSize: 18),
-                ))),
             const SizedBox(
               height: 10,
             ),
             InkWell(
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const ArticleScreen();
+                  }));
                 },
+                child: const Center(
+                    child: Text(
+                  'ARTICLES',
+                  style: TextStyle(fontSize: 18),
+                ))),
+            InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const ArticleScreen();
+                  }));
+                },
+                child: const Center(
+                    child: Text(
+                  'HOME',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ))),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'FEATURED',
@@ -87,9 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'FAVORITE',
@@ -99,9 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'BREED',
@@ -111,9 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'DOGS INFO',
@@ -123,31 +162,17 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'FAVORITE',
-                  style: TextStyle(fontSize: 18),
-                ))),
-            const SizedBox(
-              height: 10,
-            ),
-            InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Center(
-                    child: Text(
-                  'ARTICLES',
                   style: TextStyle(fontSize: 18),
                 ))),
           ],
         ),
       ),
       frontLayer: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
         ),
         child: SingleChildScrollView(
@@ -160,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Text(
-                  'A safe start to a lifelong\nfriendship',
+                  AppLocalizations.of(context)!.name,
                   style: TextStyle(
                     color: Colors.green.shade800,
                     fontSize: 19,
@@ -174,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Text(
-                  'Connect with trusted breeders and rescues',
+                  AppLocalizations.of(context)!.text,
                   style: TextStyle(
                     color: Colors.green.shade700,
                     fontWeight: FontWeight.bold,

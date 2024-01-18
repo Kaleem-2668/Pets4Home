@@ -46,6 +46,15 @@ dependencies:
   geolocator:
   permission_handler:
   backdrop: ^0.9.1
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  intl:
+  sqflite:
+  path_provider:
+  flutter_localizations:
+    sdk: flutter
+
+
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +72,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
