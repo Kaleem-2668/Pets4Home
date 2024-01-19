@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pets_4_home/controller/change_language.dart';
+import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
@@ -13,12 +14,11 @@ import 'main_screen/screens/splash/splash_screen.dart';
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-
     options: DefaultFirebaseOptions.currentPlatform,
-
   );
   SharedPreferences sp = await SharedPreferences.getInstance();
   final String languageCode=sp.getString('language_code')?? '';
+  DataBaseHelper dbHelper=DataBaseHelper.instance;
 
   runApp( MyApp(local:languageCode));
 }

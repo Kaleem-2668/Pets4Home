@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
+import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../controller/change_language.dart';
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    DataBaseHelper dbHelper=DataBaseHelper.instance;
     return BackdropScaffold(
       backLayerBackgroundColor: Colors.green.shade100,
       appBar: BackdropAppBar(
@@ -228,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 15),
-                            hintText: 'What are you looking for?',
+                            hintText: AppLocalizations.of(context)!.search,
                             suffixIcon: InkWell(
                                 onTap: () => showSearch(
                                     context: context, delegate: Search()),
@@ -249,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 decoration: InputDecoration(
                                   contentPadding:
                                       const EdgeInsets.symmetric(vertical: 15),
-                                  hintText: 'Select location',
+                                  hintText: AppLocalizations.of(context)!.location,
                                   prefixIcon: const Icon(Icons.location_on),
                                   suffixIcon: const Icon(
                                       Icons.location_searching_rounded),
