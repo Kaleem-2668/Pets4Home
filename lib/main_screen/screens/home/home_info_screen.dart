@@ -1,27 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
+import '../../../services/database_helper.dart';
 
 class HomeInfo extends StatefulWidget {
   HomeInfo({Key? key, required this.breedCategoryModel}) : super(key: key);
-  BreedCategoryModel? breedCategoryModel;
+  final BreedCategoryModel? breedCategoryModel;
 
   @override
   _HomeInfoState createState() => _HomeInfoState();
 }
 
 class _HomeInfoState extends State<HomeInfo> {
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfFavorite();
+  }
+
+  void checkIfFavorite() async {
+    bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id!);
+    setState(() {
+      isFavorite = isFav;
+    });
+  }
+  // Future<void> toggleFavorite() async {
+  //   if (isFavorite) {
+  //     await removeFromFavorites();
+  //   } else {
+  //     await addToFavorites();
+  //   }
+  // }
+  void addToFavorites() async {
+    BreedCategoryModel favorite = BreedCategoryModel(
+      id: widget.breedCategoryModel!.id,
+      imageUrl: widget.breedCategoryModel!.imageUrl.toString(),
+      titleText: widget.breedCategoryModel!.titleText,
+      subtitleText: widget.breedCategoryModel!.subtitleText,
+      breedText: widget.breedCategoryModel!.breedText,
+      priceText: widget.breedCategoryModel!.priceText,
+    );
+
+    int result = await DataBaseHelper.instance.addPets(favorite);
+    if (result > 0) {
+      Fluttertoast.showToast(
+        msg: 'Added as favorite',
+        backgroundColor: Colors.green,
+      );
+      setState(() {
+        isFavorite = true;
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Not saved',
+        backgroundColor: Colors.red,
+      );
+    }
+  }
+  void removeFromFavorites() async {
+    int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id!);
+    if (result > 0) {
+      Fluttertoast.showToast(
+        msg: 'Removed from favorites',
+        backgroundColor: Colors.red,
+      );
+      setState(() {
+        isFavorite = false;
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Not removed',
+        backgroundColor: Colors.red,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               Image(
-                image:
-                AssetImage(widget.breedCategoryModel!.imageUrl.toString()),
+                image: AssetImage(widget.breedCategoryModel!.imageUrl.toString()),
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 300,
@@ -38,19 +103,25 @@ class _HomeInfoState extends State<HomeInfo> {
                     Text(
                       widget.breedCategoryModel!.breedText,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                     Row(
                       children: [
                         InkWell(
-                            onTap: () {}, child: const Icon(Icons.location_on)),
+                          onTap: () {},
+                          child: const Icon(Icons.location_on),
+                        ),
                         const Text('London'),
                         const Text(
                           '(show map)',
                           style: TextStyle(color: Colors.green),
                         ),
                         InkWell(
-                            onTap: () {}, child: const Icon(Icons.lock_clock)),
+                          onTap: () {},
+                          child: const Icon(Icons.lock_clock),
+                        ),
                         const Text('2 minutes'),
                       ],
                     ),
@@ -60,7 +131,9 @@ class _HomeInfoState extends State<HomeInfo> {
                         Text(
                           widget.breedCategoryModel!.priceText,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 19),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 19,
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,8 +146,9 @@ class _HomeInfoState extends State<HomeInfo> {
                                 color: Colors.white,
                               ),
                               child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.share)),
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(Icons.share),
+                              ),
                             ),
                             const SizedBox(
                               width: 5,
@@ -86,12 +160,36 @@ class _HomeInfoState extends State<HomeInfo> {
                                 shape: BoxShape.circle,
                                 color: Colors.white,
                               ),
-                              child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.favorite_border)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  // onTap: () {
+                                  //   toggleFavorite().then((_) {
+                                  //     // Code to execute after toggleFavorite is completed
+                                  //     // You can add additional logic here if needed
+                                  //   });
+                                  // },
+                                  onTap: () async {
+
+                                    if (!isFavorite) {
+                                      addToFavorites();
+                                    } else {
+                                      removeFromFavorites();
+                                    }
+                                  },
+                                  child: Icon(
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: isFavorite
+                                        ? Colors.red
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     Container(
@@ -239,16 +337,20 @@ class _HomeInfoState extends State<HomeInfo> {
                       height: 10,
                     ),
                     Center(
-                        child: Text(
-                      'Learn more about Pet payment',
-                      style: TextStyle(color: Colors.green.shade800),
-                    )),
+                      child: Text(
+                        'Learn more about Pet payment',
+                        style: TextStyle(color: Colors.green.shade800),
+                      ),
+                    ),
                     const Divider(
                       thickness: 1,
                     ),
                     const Text(
                       'Details',
-                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
                     ),
                     const Row(
                       children: [
@@ -289,10 +391,11 @@ class _HomeInfoState extends State<HomeInfo> {
                       children: [
                         const Expanded(child: Text('Breed')),
                         Expanded(
-                            child: Text(
-                          'British shorthair',
-                          style: TextStyle(color: Colors.green.shade800),
-                        )),
+                          child: Text(
+                            'British shorthair',
+                            style: TextStyle(color: Colors.green.shade800),
+                          ),
+                        ),
                       ],
                     ),
                     const Row(
@@ -304,7 +407,8 @@ class _HomeInfoState extends State<HomeInfo> {
                     const Row(
                       children: [
                         Expanded(
-                            child: Text('Microchipped by collection\ndate')),
+                          child: Text('Microchipped by collection\ndate'),
+                        ),
                         Expanded(child: Text('no')),
                       ],
                     ),
@@ -317,16 +421,20 @@ class _HomeInfoState extends State<HomeInfo> {
                     const Divider(
                       thickness: 1,
                     ),
-                    const Text('Description',style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),),
-                    const SizedBox(height: 10,),
-                    const Text('This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'
-                        'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'),
-
+                    const Text(
+                      'Description',
+                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'
+                          'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!',
+                    ),
                   ],
                 ),
               ),
-
-
             ],
           ),
         ),
@@ -334,3 +442,6 @@ class _HomeInfoState extends State<HomeInfo> {
     );
   }
 }
+
+
+

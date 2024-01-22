@@ -1,22 +1,3 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-//
-// class ChangeLanguage with ChangeNotifier{
-//   Locale? _applocale;
-//   Locale? get applocale =>_applocale;
-//
-//   void ChangeLanguage(Locale type)async{
-//     SharedPreferences sp = await SharedPreferences.getInstance();
-//     if(type == Locale('en')){
-//       await sp.setString('language_code', 'en');
-//     }else{
-//       await sp.setString('language_code', 'ar');
-//     }
-//     notifyListeners();
-//   }
-//
-// }
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -18,8 +18,7 @@ void main()async {
   );
   SharedPreferences sp = await SharedPreferences.getInstance();
   final String languageCode=sp.getString('language_code')?? '';
-  DataBaseHelper dbHelper=DataBaseHelper.instance;
-
+  final dbHelper= await DataBaseHelper.instance.initializeDataBase();
   runApp( MyApp(local:languageCode));
 }
 
@@ -37,11 +36,11 @@ class MyApp extends StatelessWidget {
         child: Consumer<ChangeLanguage>(
           builder: (context, provider, child){
             if(local.isEmpty){
-              provider.changeLanguage(Locale('en'));
+              provider.changeLanguage(const Locale('en'));
             }
             return MaterialApp(
               title: 'Pets4Home',
-              locale:local==''? const Locale('en'): provider.appLocale == null ? Locale('en'):provider.appLocale,
+              locale:local==''? const Locale('en'): provider.appLocale ?? const Locale('en'),
               localizationsDelegates: const [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,

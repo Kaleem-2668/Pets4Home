@@ -119,8 +119,8 @@ class _UserTypeState extends State<UserType> {
                     ),
                   ),
                   onChanged: (PhoneNumber? number) {
-                    if (number != null && number.completeNumber != null) {
-                      phone = number.completeNumber!;
+                    if (number != null) {
+                      phone = number.completeNumber;
                     }
                   },
                   onCountryChanged: (country) {

@@ -1,6 +1,7 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
+import 'package:pets_4_home/main_screen/screens/home/favorite_screen.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
 import 'package:pets_4_home/services/database_helper.dart';
@@ -9,7 +10,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../controller/change_language.dart';
 import 'home_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -134,7 +134,11 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                    return FavoriteScreen();
+                  }));
+                },
                 child: const Center(
                     child: Text(
                   'FAVORITE',
