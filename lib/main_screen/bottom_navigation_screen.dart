@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/main_screen/screens/user/user_screen.dart';
 import 'screens/home/home_screen.dart';
 
@@ -13,11 +14,9 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   int _currentIndex = 0;
   final pages=[
     const HomeScreen(),
-    const HomeScreen(),
+    const ArticleScreen(),
     const HomeScreen(),
     const UserScreen(),
-
-
   ];
 
   @override
@@ -38,8 +37,8 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.article),
+            label: 'Article',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

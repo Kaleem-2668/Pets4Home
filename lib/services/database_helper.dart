@@ -21,7 +21,6 @@ class DataBaseHelper {
   Future<Database> initializeDataBase() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}/pets4home.db';
-    print("Database path: $path");
     var petsDataBase = await openDatabase(path, version: 2, onCreate: createDb);
     return petsDataBase;
   }
@@ -45,10 +44,10 @@ class DataBaseHelper {
           [favorite.imageUrl, favorite.titleText, favorite.subtitleText, favorite.breedText, favorite.priceText]);
       return result;
     } catch (e) {
-      print("Error adding pet to database: $e");
-      return -1; // Return a negative value to indicate an error
+      return -1;
     }
   }
+
 
   Future<int> removePet(int id) async {
     try {
@@ -56,7 +55,6 @@ class DataBaseHelper {
       int result = await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
       return result;
     } catch (e) {
-      print("Error removing pet from database: $e");
       return -1; // Return a negative value to indicate an error
     }
   }
@@ -67,7 +65,6 @@ class DataBaseHelper {
       List<Map<String, dynamic>> result = await db.query(tableName, where: 'id = ?', whereArgs: [id]);
       return result.isNotEmpty;
     } catch (e) {
-      print("Error checking if pet is favorite: $e");
       return false;
     }
   }
@@ -90,7 +87,6 @@ class DataBaseHelper {
 
       return favorites;
     } catch (e) {
-      print("Error getting favorite pets from database: $e");
       return [];
     }
   }

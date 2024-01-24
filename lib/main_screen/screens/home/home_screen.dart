@@ -8,6 +8,7 @@ import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../controller/change_language.dart';
+import '../auth/login_screen.dart';
 import 'home_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -72,7 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.search,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+
+            },
           ),
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
@@ -84,7 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                return const LoginScreen();
+              }));
+            },
           ),
         ],
       ),

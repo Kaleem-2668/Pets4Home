@@ -4,7 +4,7 @@ import 'package:pets_4_home/models/breed_category_model.dart';
 import '../../../services/database_helper.dart';
 
 class HomeInfo extends StatefulWidget {
-  HomeInfo({Key? key, required this.breedCategoryModel}) : super(key: key);
+  const HomeInfo({Key? key, required this.breedCategoryModel}) : super(key: key);
   final BreedCategoryModel? breedCategoryModel;
 
   @override
@@ -26,13 +26,19 @@ class _HomeInfoState extends State<HomeInfo> {
       isFavorite = isFav;
     });
   }
-  // Future<void> toggleFavorite() async {
-  //   if (isFavorite) {
-  //     await removeFromFavorites();
-  //   } else {
-  //     await addToFavorites();
-  //   }
-  // }
+
+  void toggleFavorite() {
+    if (isFavorite) {
+      removeFromFavorites();
+    } else {
+      addToFavorites();
+    }
+
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
   void addToFavorites() async {
     BreedCategoryModel favorite = BreedCategoryModel(
       id: widget.breedCategoryModel!.id,
@@ -47,32 +53,27 @@ class _HomeInfoState extends State<HomeInfo> {
     if (result > 0) {
       Fluttertoast.showToast(
         msg: 'Added as favorite',
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green.shade800,
       );
-      setState(() {
-        isFavorite = true;
-      });
     } else {
       Fluttertoast.showToast(
         msg: 'Not saved',
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red.shade700,
       );
     }
   }
+
   void removeFromFavorites() async {
     int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id!);
     if (result > 0) {
       Fluttertoast.showToast(
         msg: 'Removed from favorites',
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red.shade700,
       );
-      setState(() {
-        isFavorite = false;
-      });
     } else {
       Fluttertoast.showToast(
         msg: 'Not removed',
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red.shade700,
       );
     }
   }
@@ -114,9 +115,9 @@ class _HomeInfoState extends State<HomeInfo> {
                           child: const Icon(Icons.location_on),
                         ),
                         const Text('London'),
-                        const Text(
+                        Text(
                           '(show map)',
-                          style: TextStyle(color: Colors.green),
+                          style: TextStyle(color: Colors.green.shade700),
                         ),
                         InkWell(
                           onTap: () {},
@@ -163,26 +164,15 @@ class _HomeInfoState extends State<HomeInfo> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: InkWell(
-                                  // onTap: () {
-                                  //   toggleFavorite().then((_) {
-                                  //     // Code to execute after toggleFavorite is completed
-                                  //     // You can add additional logic here if needed
-                                  //   });
-                                  // },
-                                  onTap: () async {
-
-                                    if (!isFavorite) {
-                                      addToFavorites();
-                                    } else {
-                                      removeFromFavorites();
-                                    }
+                                  onTap: () {
+                                    toggleFavorite();
                                   },
                                   child: Icon(
                                     isFavorite
                                         ? Icons.favorite
                                         : Icons.favorite_border,
                                     color: isFavorite
-                                        ? Colors.red
+                                        ? Colors.red.shade700
                                         : Colors.black,
                                   ),
                                 ),
@@ -195,7 +185,7 @@ class _HomeInfoState extends State<HomeInfo> {
                     Container(
                       width: 150,
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: Colors.amber.shade700,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Row(
@@ -217,7 +207,7 @@ class _HomeInfoState extends State<HomeInfo> {
                           child: Container(
                             width: 190,
                             decoration: BoxDecoration(
-                              color: Colors.green.shade800,
+                              color: Colors.green.shade700,
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: const Padding(
@@ -246,7 +236,7 @@ class _HomeInfoState extends State<HomeInfo> {
                           child: Container(
                             width: 190,
                             decoration: BoxDecoration(
-                              color: Colors.green.shade800,
+                              color: Colors.green.shade700,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Padding(
@@ -339,7 +329,7 @@ class _HomeInfoState extends State<HomeInfo> {
                     Center(
                       child: Text(
                         'Learn more about Pet payment',
-                        style: TextStyle(color: Colors.green.shade800),
+                        style: TextStyle(color: Colors.green.shade700),
                       ),
                     ),
                     const Divider(
@@ -442,6 +432,3 @@ class _HomeInfoState extends State<HomeInfo> {
     );
   }
 }
-
-
-

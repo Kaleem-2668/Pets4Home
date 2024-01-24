@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pets_4_home/main_screen/screens/home/home_info_screen.dart';
+import 'package:pets_4_home/main_screen/screens/home/home_screen.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import '../../../services/database_helper.dart';
 
 class FavoriteScreen extends StatefulWidget {
+  const FavoriteScreen({super.key});
+
   @override
   _FavoriteScreenState createState() => _FavoriteScreenState();
 }
@@ -20,7 +24,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorite Pets'),
+        title: const Text('Favorite Pets'),
       ),
       body: FutureBuilder<List<BreedCategoryModel>>(
         future: favoritePets,
@@ -42,19 +46,30 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 BreedCategoryModel favoritePet = snapshot.data![index];
-                return ListTile(
-                  leading: Image.asset(favoritePet.imageUrl,width: 70,height: 70,fit: BoxFit.cover,),
-                  title: Text(favoritePet.breedText),
-                  subtitle: Text(favoritePet.priceText),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.green),
-                    onPressed: () async {
-                      // Remove the item from favorites and refresh the list
-                      await DataBaseHelper.instance.removePet(favoritePet.id!);
-                      setState(() {
-                        favoritePets = DataBaseHelper.instance.getFavoritePets();
-                      });
-                    },
+                return InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                      return HomeInfo(breedCategoryModel: favoritePet,);
+                    }));
+                  },
+                  child: ListTile(
+                    leading: Image.asset(
+                      favoritePet.imageUrl,
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(favoritePet.breedText),
+                    subtitle: Text(favoritePet.priceText),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.green),
+                      onPressed: () async {
+                        await DataBaseHelper.instance.removePet(favoritePet.id!);
+                        setState(() {
+                          favoritePets = DataBaseHelper.instance.getFavoritePets();
+                        });
+                      },
+                    ),
                   ),
                 );
               },
