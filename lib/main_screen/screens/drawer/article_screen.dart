@@ -37,15 +37,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
             onChanged: (query) {
               filterArticles(query);
             },
+            style: const TextStyle(color: Colors.white, fontSize: 18.0),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 15,
                 horizontal: 15,
               ),
               hintText: 'Search for your Article',
-              suffixIcon: const Icon(Icons.search),
+              hintStyle: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+              suffixIcon: const Icon(Icons.search,color: Colors.white,),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.white),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.white), // Set focused border color
               ),
             ),
           ),

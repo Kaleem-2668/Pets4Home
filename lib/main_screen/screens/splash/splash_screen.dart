@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _initApp() async {
     var status = await Permission.location.request();
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     if (status == PermissionStatus.granted) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) {

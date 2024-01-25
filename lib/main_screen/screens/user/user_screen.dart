@@ -4,8 +4,13 @@ class UserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text('user screen'),
+    return  Scaffold(
+      appBar: AppBar(
+        title: const Text('User Screen'),
+        centerTitle: true,
+      ),
+
+      body: const Center(child: Text('user screen',style: TextStyle(fontSize: 30),)),
     );
   }
 }

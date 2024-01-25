@@ -17,19 +17,25 @@ class _HomeInfoState extends State<HomeInfo> {
   @override
   void initState() {
     super.initState();
-    checkIfFavorite();
+    if (widget.breedCategoryModel != null) {
+      checkIfFavorite();
+    }
   }
 
   void checkIfFavorite() async {
-    bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id!);
-    setState(() {
-      isFavorite = isFav;
-    });
+    if (widget.breedCategoryModel != null && widget.breedCategoryModel!.id != null) {
+      bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id!);
+      setState(() {
+        isFavorite = isFav;
+      });
+    }
   }
 
   void toggleFavorite() {
     if (isFavorite) {
-      removeFromFavorites();
+      setState(() {
+        removeFromFavorites();
+      });
     } else {
       addToFavorites();
     }

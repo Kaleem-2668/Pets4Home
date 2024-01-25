@@ -21,7 +21,7 @@ class DataBaseHelper {
   Future<Database> initializeDataBase() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}/pets4home.db';
-    var petsDataBase = await openDatabase(path, version: 2, onCreate: createDb);
+    var petsDataBase = await openDatabase(path, version: 1, onCreate: createDb);
     return petsDataBase;
   }
 

@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backLayerBackgroundColor: Colors.green.shade100,
       appBar: BackdropAppBar(
         title: Text(AppLocalizations.of(context)!.helloWorld),
-        backgroundColor: Colors.green.shade800,
+        // backgroundColor: Colors.green.shade800,
         leadingWidth: 60,
         actions: <Widget>[
           Consumer<ChangeLanguage>(builder: (context, provider, child) {
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
             InkWell(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                    return FavoriteScreen();
+                    return const FavoriteScreen();
                   }));
                 },
                 child: const Center(
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(width: 5),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade900,
+                                backgroundColor: Colors.green.shade700,
                               ),
                               onPressed: () {},
                               child: const Text(

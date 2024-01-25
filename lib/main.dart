@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
                 Locale('ar'),
               ],
               theme: ThemeData(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade800),
-                useMaterial3: true,
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade700),
+                useMaterial3: false,
 
               ),
               home: const SplashScreen(),

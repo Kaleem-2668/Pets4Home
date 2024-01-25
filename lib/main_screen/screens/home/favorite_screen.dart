@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/home/home_info_screen.dart';
-import 'package:pets_4_home/main_screen/screens/home/home_screen.dart';
 import 'package:pets_4_home/models/breed_category_model.dart';
 import '../../../services/database_helper.dart';
 
@@ -53,11 +52,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     }));
                   },
                   child: ListTile(
-                    leading: Image.asset(
-                      favoritePet.imageUrl,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        favoritePet.imageUrl,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     title: Text(favoritePet.breedText),
                     subtitle: Text(favoritePet.priceText),
