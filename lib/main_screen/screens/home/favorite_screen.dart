@@ -17,6 +17,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   void initState() {
     super.initState();
     favoritePets = DataBaseHelper.instance.getFavoritePets();
+
   }
 
   @override
@@ -47,9 +48,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 BreedCategoryModel favoritePet = snapshot.data![index];
                 return InkWell(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                      return HomeInfo(breedCategoryModel: favoritePet,);
-                    }));
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) {
+                      return HomeInfo(breedCategoryModel: favoritePet);
+                    })).then((result) {
+                      if (result != null && result is bool && result) {
+                        setState(() {
+                          favoritePets = DataBaseHelper.instance.getFavoritePets();
+                        });
+                      }
+                    });
+
                   },
                   child: ListTile(
                     leading: ClipRRect(
@@ -65,8 +73,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     subtitle: Text(favoritePet.priceText),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.green),
-                      onPressed: () async {
-                        await DataBaseHelper.instance.removePet(favoritePet.id!);
+                      onPressed: ()  {
+                         DataBaseHelper.instance.removePet(favoritePet.id);
                         setState(() {
                           favoritePets = DataBaseHelper.instance.getFavoritePets();
                         });

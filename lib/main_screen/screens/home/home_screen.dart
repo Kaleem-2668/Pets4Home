@@ -25,20 +25,32 @@ enum Language {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<BreedCategoryModel>> favoritePets;
   final TextEditingController _locationController = TextEditingController();
   bool enable = true;
+  bool _mounted = true;
 
   @override
   void initState() {
     super.initState();
+    favoritePets = DataBaseHelper.instance.getFavoritePets();
     loadData();
+  }
+  @override
+  void dispose() {
+    _mounted = false; // Set the flag to false when the widget is disposed
+    super.dispose();
   }
 
   Future<void> loadData() async {
     await Future.delayed(const Duration(seconds: 4));
-    setState(() {
-      enable = false;
-    });
+
+    // Check if the widget is still mounted before calling setState
+    if (_mounted) {
+      setState(() {
+        enable = false;
+      });
+    }
   }
 
   @override

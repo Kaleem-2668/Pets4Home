@@ -20,12 +20,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
     super.initState();
     loadData();
   }
-
   loadData() async {
     await Future.delayed(const Duration(seconds: 3));
-    setState(() {
-      enable = false;
-    });
+    if (mounted) {
+      setState(() {
+        enable = false;
+      });
+    }
   }
 
   @override

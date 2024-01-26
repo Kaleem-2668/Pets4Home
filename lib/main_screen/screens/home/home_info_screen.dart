@@ -19,31 +19,33 @@ class _HomeInfoState extends State<HomeInfo> {
     super.initState();
     if (widget.breedCategoryModel != null) {
       checkIfFavorite();
+
     }
   }
 
   void checkIfFavorite() async {
     if (widget.breedCategoryModel != null && widget.breedCategoryModel!.id != null) {
-      bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id!);
+      bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id);
       setState(() {
         isFavorite = isFav;
       });
     }
   }
-
-  void toggleFavorite() {
-    if (isFavorite) {
+  void toggleFavorite() async {
+    if (mounted) {
+      if (isFavorite) {
+        setState(() {
+          removeFromFavorites();
+        });
+      } else {
+        addToFavorites();
+      }
       setState(() {
-        removeFromFavorites();
+        isFavorite = !isFavorite;
       });
-    } else {
-      addToFavorites();
     }
-
-    setState(() {
-      isFavorite = !isFavorite;
-    });
   }
+
 
   void addToFavorites() async {
     BreedCategoryModel favorite = BreedCategoryModel(
@@ -70,19 +72,27 @@ class _HomeInfoState extends State<HomeInfo> {
   }
 
   void removeFromFavorites() async {
-    int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id!);
-    if (result > 0) {
-      Fluttertoast.showToast(
-        msg: 'Removed from favorites',
-        backgroundColor: Colors.red.shade700,
-      );
-    } else {
-      Fluttertoast.showToast(
-        msg: 'Not removed',
-        backgroundColor: Colors.red.shade700,
-      );
+    if (widget.breedCategoryModel!.id != null) {
+      int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id);
+      if (result > 0) {
+        Fluttertoast.showToast(
+          msg: 'Removed from favorites',
+          backgroundColor: Colors.red.shade700,
+        );
+        // Inform the FavoriteScreen that an item is removed
+        // Navigator.pop(context, true);
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Not removed',
+          backgroundColor: Colors.red.shade700,
+        );
+        // Inform the FavoriteScreen that the removal was not successful
+
+      }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

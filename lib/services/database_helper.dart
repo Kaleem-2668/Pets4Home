@@ -40,8 +40,8 @@ class DataBaseHelper {
     try {
       Database db = await instance.database;
       int result = await db.rawInsert(
-          'INSERT INTO $tableName(image, title, subtitle, breedText, price) VALUES(?,?,?,?,?)',
-          [favorite.imageUrl, favorite.titleText, favorite.subtitleText, favorite.breedText, favorite.priceText]);
+          'INSERT INTO $tableName(id, image, title, subtitle, breedText, price) VALUES(?,?,?,?,?,?)',
+          [favorite.id,favorite.imageUrl, favorite.titleText, favorite.subtitleText, favorite.breedText, favorite.priceText]);
       return result;
     } catch (e) {
       return -1;
