@@ -1,105 +1,131 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/models/article_model.dart';
+import 'package:pets_4_home/models/category_model.dart';
+
+import '../../../models/ArticlModel.dart';
+import '../../../view_model/article_view_model.dart';
 
 class ArticleInfo extends StatefulWidget {
-  ArticleInfo({Key? key ,required this.articleModelList}) : super(key: key);
+  ArticleInfo({Key? key, required this.articleModelList,}) : super(key: key);
   ArticleModel? articleModelList;
-
   @override
   _ArticleInfoState createState() => _ArticleInfoState();
 }
-
+final articleViewModel = ArticleViewModel();
 class _ArticleInfoState extends State<ArticleInfo> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    final height = MediaQuery.sizeOf(context).height;
+    final width = MediaQuery.sizeOf(context).width;
+    return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image(image: AssetImage(widget.articleModelList!.imageUrl.toString())),
-            const SizedBox(
-              height: 20,
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal:13.0),
-              child: Text(
-                'Important announcement:\nchanges ti American Bully Xl\nadverts on Pets4Homes',
-                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
-              ),
-            ),
-            const SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(widget.articleModelList!.titleText,style: const TextStyle(fontWeight: FontWeight.bold),),
-                  Text(widget.articleModelList!.trailingText)
-                ],
-              ),
-            ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: width,
+                height: height * .42,
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      width: double.infinity, // Set width to cover full width
+                      height: height * .42,
+                      child: CachedNetworkImage(
+                        imageUrl: "https://wowpetspalace.com/dashboard/${widget.articleModelList!.image}",
+                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
 
-            const SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              child: Text(widget.articleModelList!.subtitleText),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 13.0),
-            //   child: Row(
-            //     children: [
-            //     InkWell(
-            //                 onTap: (){},
-            //                 child: Container(
-            //                   decoration: BoxDecoration(
-            //                     borderRadius: BorderRadius.circular(15),
-            //                     color: Colors.green.shade100,
-            //                   ),
-            //                   child: const Padding(
-            //                     padding: EdgeInsets.symmetric(horizontal: 6.0),
-            //                     child: Text('DOGS'),
-            //                   ),
-            //                 ),
-            //               ),
-            //       SizedBox(width: 10,),
-            //       InkWell(
-            //         onTap: (){},
-            //         child: Container(
-            //           decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(15),
-            //             color: Colors.green.shade100,
-            //           ),
-            //           child: const Padding(
-            //             padding: EdgeInsets.symmetric(horizontal: 6.0),
-            //             child: Text('GENERAL'),
-            //           ),
-            //         ),
-            //       ),
-            //       SizedBox(width: 10,),
-            //       InkWell(
-            //         onTap: (){},
-            //         child: Container(
-            //           decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.circular(15),
-            //             color: Colors.green.shade100,
-            //           ),
-            //           child: const Padding(
-            //             padding: EdgeInsets.symmetric(horizontal: 6.0),
-            //             child: Text('BREED FACTS'),
-            //           ),
-            //         ),
-            //       ),
-            //       SizedBox(width: 10,),
-            //       Text('15 Dec 2023'),
-            //
-            //
-            //     ],
-            //   ),
-            // ),
+                    FutureBuilder<List<CategoryModel>>(
+                        future: articleViewModel.fetchCategoryData(),
+                        builder: (BuildContext context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return  Center(child: Container());
+                          }else if(snapshot.hasError){
+                            return const Text('error');
 
-          ],
+                          }else {
+                            return Positioned(
+                              left: 30,
+                              right: 0,
+                              top: 250,
+                              bottom: 0,
+                              child: Row(
+                                children: snapshot.data!.map((categoryData) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Colors.green.shade100,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                        child: Text(categoryData.categoryName.toString()),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            );
+
+                        }
+
+                        })
+
+                  ],
+
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.articleModelList!.title.toString(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(height: 10,),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.amber.shade700,
+                      ),
+                      child:  Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child:Text(
+                          widget.articleModelList!.categoryName.toString(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 13.0),
+                child: Text(
+                  widget.articleModelList!.description.toString(),
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+
+            ],
+          ),
         ),
       ),
       floatingActionButton: FabCircularMenuPlus(
@@ -107,21 +133,22 @@ class _ArticleInfoState extends State<ArticleInfo> {
         fabOpenIcon: const Icon(Icons.share, color: Colors.white),
         fabCloseIcon: const Icon(Icons.close, color: Colors.white),
         ringColor: Colors.green.shade700,
-        ringDiameter:200,
+        ringDiameter: 200,
         children: [
-          IconButton(icon: const Icon(Icons.home,color: Colors.white), onPressed: () {
-          }),
-          IconButton(icon: const Icon(Icons.facebook,color: Colors.white), onPressed: () {
-
-          }),
-          IconButton(icon: const Icon(Icons.person,color: Colors.white), onPressed: () {
-
-          }),
-          IconButton(icon: const Icon(Icons.favorite,color: Colors.white), onPressed: () {
-          })
+          IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.facebook, color: Colors.white),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.person, color: Colors.white),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.favorite, color: Colors.white),
+              onPressed: () {})
         ],
       ),
-
     );
   }
 }

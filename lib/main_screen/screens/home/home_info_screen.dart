@@ -79,7 +79,7 @@ class _HomeInfoState extends State<HomeInfo> {
           msg: 'Removed from favorites',
           backgroundColor: Colors.red.shade700,
         );
-        // Inform the FavoriteScreen that an item is removed
+
         // Navigator.pop(context, true);
       } else {
         Fluttertoast.showToast(

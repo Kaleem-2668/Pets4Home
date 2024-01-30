@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   @override
   void dispose() {
-    _mounted = false; // Set the flag to false when the widget is disposed
+    _mounted = false;
     super.dispose();
   }
 
@@ -244,60 +244,62 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          onTap: () {
-                            showSearch(context: context, delegate: Search());
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 15),
-                            hintText: AppLocalizations.of(context)!.search,
-                            suffixIcon: InkWell(
-                                onTap: () => showSearch(
-                                    context: context, delegate: Search()),
-                                child: const Icon(Icons.search)),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            onTap: () {
+                              showSearch(context: context, delegate: Search());
+                            },
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 15),
+                              hintText: AppLocalizations.of(context)!.search,
+                              suffixIcon: InkWell(
+                                  onTap: () => showSearch(
+                                      context: context, delegate: Search()),
+                                  child: const Icon(Icons.search)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: _locationController,
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  hintText: AppLocalizations.of(context)!.location,
-                                  prefixIcon: const Icon(Icons.location_on),
-                                  suffixIcon: const Icon(
-                                      Icons.location_searching_rounded),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _locationController,
+                                  decoration: InputDecoration(
+                                    contentPadding:
+                                        const EdgeInsets.symmetric(vertical: 15),
+                                    hintText: AppLocalizations.of(context)!.location,
+                                    prefixIcon: const Icon(Icons.location_on),
+                                    suffixIcon: const Icon(
+                                        Icons.location_searching_rounded),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 5),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade700,
+                              const SizedBox(width: 5),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green.shade700,
+                                ),
+                                onPressed: () {},
+                                child: const Text(
+                                  'Search',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              onPressed: () {},
-                              child: const Text(
-                                'Search',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -613,27 +615,32 @@ class Search extends SearchDelegate {
       return ListView.builder(
         itemCount: searchResults.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            leading: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                  breedCategoryModel[index].imageUrl,
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.cover,
-                )),
-            title: Text(searchResults[index].titleText),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => HomeInfo(
-                    breedCategoryModel: searchResults[index],
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListTile(
+              leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child:
+                  Image.asset(
+                    searchResults[index].imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  )
+            ),
+              title: Text(searchResults[index].titleText),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => HomeInfo(
+                      breedCategoryModel: searchResults[index],
+                    ),
                   ),
-                ),
-              );
-            },
-            trailing: Text(searchResults[index].priceText),
+                );
+              },
+              trailing: Text(searchResults[index].priceText),
+            ),
           );
         },
       );
@@ -656,22 +663,25 @@ class Search extends SearchDelegate {
     return ListView.builder(
       itemCount: filteredSuggestions.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-              filteredSuggestions[index].imageUrl,
-              height: 70,
-              width: 70,
-              fit: BoxFit.cover,
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                filteredSuggestions[index].imageUrl,
+                height: 70,
+                width: 70,
+                fit: BoxFit.cover,
+              ),
             ),
+            title: Text(filteredSuggestions[index].titleText),
+            onTap: () {
+              query = filteredSuggestions[index].titleText;
+              showResults(context);
+            },
+            trailing: Text(filteredSuggestions[index].priceText),
           ),
-          title: Text(filteredSuggestions[index].titleText),
-          onTap: () {
-            query = filteredSuggestions[index].titleText;
-            showResults(context);
-          },
-          trailing: Text(filteredSuggestions[index].priceText),
         );
       },
     );
