@@ -3,7 +3,7 @@ import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/category_model.dart';
 
-import '../../../models/ArticlModel.dart';
+import '../../../models/article_model.dart';
 import '../../../view_model/article_view_model.dart';
 
 class ArticleInfo extends StatefulWidget {
@@ -27,58 +27,15 @@ class _ArticleInfoState extends State<ArticleInfo> {
               SizedBox(
                 width: width,
                 height: height * .42,
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: double.infinity, // Set width to cover full width
-                      height: height * .42,
-                      child: CachedNetworkImage(
-                        imageUrl: "https://wowpetspalace.com/dashboard/${widget.articleModelList!.image}",
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-
-                    FutureBuilder<List<CategoryModel>>(
-                        future: articleViewModel.fetchCategoryData(),
-                        builder: (BuildContext context, snapshot){
-                          if(snapshot.connectionState == ConnectionState.waiting){
-                            return  Center(child: Container());
-                          }else if(snapshot.hasError){
-                            return const Text('error');
-
-                          }else {
-                            return Positioned(
-                              left: 30,
-                              right: 0,
-                              top: 250,
-                              bottom: 0,
-                              child: Row(
-                                children: snapshot.data!.map((categoryData) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 10.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: Colors.green.shade100,
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                                        child: Text(categoryData.categoryName.toString()),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            );
-
-                        }
-
-                        })
-
-                  ],
-
+                child: SizedBox(
+                  width: double.infinity, // Set width to cover full width
+                  height: height * .42,
+                  child: CachedNetworkImage(
+                    imageUrl: "https://wowpetspalace.com/dashboard/${widget.articleModelList!.image}",
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(

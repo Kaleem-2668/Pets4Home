@@ -24,7 +24,7 @@ class _HomeInfoState extends State<HomeInfo> {
   }
 
   void checkIfFavorite() async {
-    if (widget.breedCategoryModel != null && widget.breedCategoryModel!.id != null) {
+    if (widget.breedCategoryModel != null) {
       bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id);
       setState(() {
         isFavorite = isFav;
@@ -72,25 +72,23 @@ class _HomeInfoState extends State<HomeInfo> {
   }
 
   void removeFromFavorites() async {
-    if (widget.breedCategoryModel!.id != null) {
-      int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id);
-      if (result > 0) {
-        Fluttertoast.showToast(
-          msg: 'Removed from favorites',
-          backgroundColor: Colors.red.shade700,
-        );
+    int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id);
+    if (result > 0) {
+      Fluttertoast.showToast(
+        msg: 'Removed from favorites',
+        backgroundColor: Colors.red.shade700,
+      );
 
-        // Navigator.pop(context, true);
-      } else {
-        Fluttertoast.showToast(
-          msg: 'Not removed',
-          backgroundColor: Colors.red.shade700,
-        );
-        // Inform the FavoriteScreen that the removal was not successful
+      // Navigator.pop(context, true);
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Not removed',
+        backgroundColor: Colors.red.shade700,
+      );
+      // Inform the FavoriteScreen that the removal was not successful
 
-      }
     }
-  }
+    }
 
 
 

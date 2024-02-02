@@ -60,6 +60,7 @@ import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/main_screen/screens/home/favorite_screen.dart';
 import 'package:pets_4_home/main_screen/screens/home/home_screen.dart';
 import 'package:pets_4_home/main_screen/screens/user/user_screen.dart';
+import 'package:pets_4_home/models/category_model.dart';
 
 class BottomBarScreen extends StatefulWidget {
   const BottomBarScreen({Key? key}) : super(key: key);
@@ -87,7 +88,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
     if(index==0){
       if(lastpress == null|| DateTime.now().difference(lastpress!)>const Duration(seconds: 2)){
         lastpress = DateTime.now();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("press agian to exit")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("press agian to exit")));
       return false;
       }else{
         return true;

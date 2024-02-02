@@ -126,11 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   'ARTICLES',
                   style: TextStyle(fontSize: 18),
                 ))),
+            const SizedBox(
+              height: 10,
+            ),
             InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const ArticleScreen();
-                  }));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  //   return const ArticleScreen();
+                  // }));
                 },
                 child: const Center(
                     child: Text(
