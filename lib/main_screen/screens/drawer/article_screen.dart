@@ -265,6 +265,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/category_wise_model.dart';
 import 'package:pets_4_home/view_model/article_view_model.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../models/article_model.dart';
 
@@ -285,13 +286,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
   List<CategoryModel> categories = [];
   List<Data> categoryWiseData = [];
   bool isCategorySelected = false;
+  late Future<List<CategoryModel>> categoryDataFuture;
+  int? selectedCategoryId;
+
 
   @override
   void initState() {
     super.initState();
-    // Fetch articles and categories when the screen is initialized
+    // Fetch articles when the screen is initialized
     fetchArticleData();
-    fetchCategoryData();
+    // Initialize the Future for category data
+    categoryDataFuture = articleViewModel.fetchCategoryData();
   }
 
   // Function to fetch articles using the ViewModel
@@ -313,9 +318,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
     try {
       List<CategoryModel> fetchedCategories =
       await articleViewModel.fetchCategoryData();
-      setState(() {
-        categories = fetchedCategories;
-      });
+      // setState(() {
+      //   categories = fetchedCategories;
+      // });
     } catch (e) {
       // Handle error
       print('Error fetching categories: $e');
@@ -330,12 +335,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
       setState(() {
         categoryWiseData = fetchedCategoryWiseData.data ?? [];
         isCategorySelected = true;
+        selectedCategoryId = categoryId;
       });
     } catch (e) {
       // Handle error
       print('Error fetching category-wise data: $e');
     }
   }
+
 
 
   // Function to reset to articles view
@@ -556,10 +563,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ),
             const SizedBox(height: 20,),
             FutureBuilder<List<CategoryModel>>(
-              future: articleViewModel.fetchCategoryData(),
+                future: categoryDataFuture,
               builder: (BuildContext context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: Container());
+                  return Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade200,
+                      child: _buildShimmerCard(),
+                    );
                 } else if (snapshot.hasError) {
                   return const Text('error');
                 } else {
@@ -578,7 +589,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: Colors.green.shade700,
+                                color: selectedCategoryId == categoryData.categoryid
+                                    ? Colors.green.shade700// Set the selected category color
+                                    : Colors.green.shade300,
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(

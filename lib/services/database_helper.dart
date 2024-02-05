@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import '../models/breed_category_model.dart';
+import '../models/shared_post_model.dart';
 
 class DataBaseHelper {
   final String dbName = 'Pets4home.db';
@@ -36,7 +36,7 @@ class DataBaseHelper {
     )''');
   }
 
-  Future<int> addPets(BreedCategoryModel favorite) async {
+  Future<int> addPets(SharedPostModel favorite) async {
     try {
       Database db = await instance.database;
       int result = await db.rawInsert(
@@ -69,13 +69,13 @@ class DataBaseHelper {
     }
   }
 
-  Future<List<BreedCategoryModel>> getFavoritePets() async {
+  Future<List<SharedPostModel>> getFavoritePets() async {
     try {
       Database db = await instance.database;
       List<Map<String, dynamic>> result = await db.query(tableName);
 
-      List<BreedCategoryModel> favorites = result.map((map) {
-        return BreedCategoryModel(
+      List<SharedPostModel> favorites = result.map((map) {
+        return SharedPostModel(
           id: map['id'],
           imageUrl: map['image'],
           titleText: map['title'],

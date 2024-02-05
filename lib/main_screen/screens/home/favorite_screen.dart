@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/home/home_info_screen.dart';
-import 'package:pets_4_home/models/breed_category_model.dart';
+import 'package:pets_4_home/models/shared_post_model.dart';
 import '../../../services/database_helper.dart';
 
 class FavoriteScreen extends StatefulWidget {
@@ -11,7 +11,7 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  late Future<List<BreedCategoryModel>> favoritePets;
+  late Future<List<SharedPostModel>> favoritePets;
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       appBar: AppBar(
         title: const Text('Favorite Pets'),
       ),
-      body: FutureBuilder<List<BreedCategoryModel>>(
+      body: FutureBuilder<List<SharedPostModel>>(
         future: favoritePets,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -45,7 +45,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                BreedCategoryModel favoritePet = snapshot.data![index];
+                SharedPostModel favoritePet = snapshot.data![index];
                 return InkWell(
                   onTap: (){
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) {

@@ -2,13 +2,14 @@ import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/main_screen/screens/home/favorite_screen.dart';
-import 'package:pets_4_home/models/breed_category_model.dart';
+import 'package:pets_4_home/models/shared_post_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
 import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../controller/change_language.dart';
 import '../auth/login_screen.dart';
+import '../drawer/breed_screen.dart';
 import 'home_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -25,7 +26,7 @@ enum Language {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<BreedCategoryModel>> favoritePets;
+  late Future<List<SharedPostModel>> favoritePets;
   final TextEditingController _locationController = TextEditingController();
   bool enable = true;
   bool _mounted = true;
@@ -170,7 +171,11 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                    return const BreedScreen();
+                  }));
+                },
                 child: const Center(
                     child: Text(
                   'BREED',
@@ -584,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class Search extends SearchDelegate {
-  List<BreedCategoryModel> data = breedCategoryModel;
+  List<SharedPostModel> data = breedCategoryModel;
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -609,7 +614,7 @@ class Search extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<BreedCategoryModel> searchResults = data
+    List<SharedPostModel> searchResults = data
         .where((breed) =>
             breed.titleText.toLowerCase().contains(query.toLowerCase()))
         .toList();
@@ -658,7 +663,7 @@ class Search extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<BreedCategoryModel> filteredSuggestions = data
+    List<SharedPostModel> filteredSuggestions = data
         .where((breed) =>
             breed.titleText.toLowerCase().contains(query.toLowerCase()))
         .toList();

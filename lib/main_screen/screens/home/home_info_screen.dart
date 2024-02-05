@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pets_4_home/models/breed_category_model.dart';
+import 'package:pets_4_home/models/shared_post_model.dart';
 import '../../../services/database_helper.dart';
 
 class HomeInfo extends StatefulWidget {
   const HomeInfo({Key? key, required this.breedCategoryModel}) : super(key: key);
-  final BreedCategoryModel? breedCategoryModel;
+  final SharedPostModel? breedCategoryModel;
 
   @override
   _HomeInfoState createState() => _HomeInfoState();
@@ -48,7 +48,7 @@ class _HomeInfoState extends State<HomeInfo> {
 
 
   void addToFavorites() async {
-    BreedCategoryModel favorite = BreedCategoryModel(
+    SharedPostModel favorite = SharedPostModel(
       id: widget.breedCategoryModel!.id,
       imageUrl: widget.breedCategoryModel!.imageUrl.toString(),
       titleText: widget.breedCategoryModel!.titleText,
