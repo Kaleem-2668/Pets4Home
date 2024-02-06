@@ -21,6 +21,8 @@ class _BreedScreenState extends State<BreedScreen> {
   PetsApiCategory? selectedPet;
   Future<List<PetsApiCategory>>? petsApiFuture;
   Future<List<BreedCategoryModel>>? breedCategoryFuture;
+  TextEditingController searchController = TextEditingController();
+  List<BreedCategoryModel> filteredBreedList = [];
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,26 @@ class _BreedScreenState extends State<BreedScreen> {
     petsApiFuture = articleViewModel.fetchPetsApiCategory();
     // Initialize the future for the second API call
     breedCategoryFuture = articleViewModel.fetchBreedCategoryData();
+    breedCategoryFuture?.then((breedList) {
+      filteredBreedList = List.from(breedList);
+    });
+  }
+  void filterBreedList(String query) {
+    if (query.isEmpty) {
+      // If the query is empty, show the complete breed list
+      breedCategoryFuture?.then((breedList) {
+        filteredBreedList = List.from(breedList);
+      });
+    } else {
+      // If the query is not empty, filter the list based on the title
+      breedCategoryFuture?.then((breedList) {
+        filteredBreedList = breedList
+            .where((breed) =>
+            breed.breedTitle!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    }
+    setState(() {}); // Update the UI to reflect the changes
   }
 
   @override
@@ -119,10 +141,17 @@ class _BreedScreenState extends State<BreedScreen> {
           ),
               const SizedBox(height: 20),
               TextFormField(
-                onChanged: (query) {
-                  // Filter articles based on query
-                },
-                style: const TextStyle(color: Colors.white, fontSize: 18.0),
+                //   onTap: () {
+                //   // Trigger search when the user clicks on the search bar
+                //   filterBreedList(searchController.text);
+                // },
+                // onChanged: (query) {
+                //   // Filter articles based on query
+                //   filterBreedList(query);
+                // },
+                // controller: searchController,
+                style: const TextStyle(color: Colors.black, fontSize: 18.0),
+
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
                     vertical: 15,
@@ -137,19 +166,31 @@ class _BreedScreenState extends State<BreedScreen> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(color: Colors.green),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: const BorderSide(
-                        color: Colors.white), // Set focused border color
+                        color: Colors.green), // Set focused border color
                   ),
-                ),
-              ),
+                )),
+              // if (searchController.text.isNotEmpty && filteredBreedList.isNotEmpty)
+              // SizedBox(
+              //   height: 150, // Adjust the height as needed
+              //   child: ListView.builder(
+              //     itemCount: filteredBreedList.length,
+              //     itemBuilder: (context, index) {
+              //       BreedCategoryModel breed = filteredBreedList[index];
+              //       return ListTile(
+              //         title: Text(breed.breedTitle.toString()),
+              //       );
+              //     },
+              //   ),
+              // ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * .55,
+                height: MediaQuery.of(context).size.height * .80,
                 child: FutureBuilder(
                   future: breedCategoryFuture,
                   builder: (context, snapshot) {
@@ -190,7 +231,7 @@ class _BreedScreenState extends State<BreedScreen> {
                                 fit: BoxFit.cover,
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
                                   selectedBreed.breedTitle ?? '',
                                   style: const TextStyle(
@@ -208,7 +249,33 @@ class _BreedScreenState extends State<BreedScreen> {
                               //     ),
                               //   ),
                               // ),
-                              // Add more widgets as needed
+                              //
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) {
+                                        return const BreedInfoScreen(
+                                          breedId: 1,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Center(
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height * 0.04,
+                                    width: MediaQuery.of(context).size.width * 0.5,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.green,
+                                    ),
+                                    child: const Center(child: Text('Breed Details',style: TextStyle(fontWeight: FontWeight.bold),)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10,),
                             ],
                           );
                         },
@@ -221,31 +288,7 @@ class _BreedScreenState extends State<BreedScreen> {
               const SizedBox(
                 height: 10,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (ctx) {
-                        return const BreedInfoScreen(
-                          breedId: 1,
-                        );
-                      },
-                    ),
-                  );
-                },
-                child: Center(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.green,
-                    ),
-                    child: const Center(child: Text('Breed Details',style: TextStyle(fontWeight: FontWeight.bold),)),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),
@@ -259,22 +302,27 @@ Widget _buildLoadingState() {
   return Shimmer.fromColors(
     baseColor: Colors.grey[300]!,
     highlightColor: Colors.grey[100]!,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          height:300 ,
-          color: Colors.white,
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 15,
-          width: 150,
-          color: Colors.white,
-        ),
-      ],
+    child: ListView.builder(
+      itemCount: 2,
+      itemBuilder: (BuildContext context, int index) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              height:300 ,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 15,
+              width: 150,
+              color: Colors.white,
+            ),
+          ],
+        );
+      },
     ),
   );
 }
@@ -283,33 +331,39 @@ Widget _buildShimmerUI() {
   return Shimmer.fromColors(
     baseColor: Colors.grey[300]!,
     highlightColor: Colors.grey[100]!,
-    child: Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    color: Colors.white, // Use color instead of decoration
+    child: ListView.builder(
+      itemCount: 1,
+      itemBuilder: (BuildContext context, int index) {
+        return  Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        color: Colors.white, // Use color instead of decoration
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 10,
+                    width: 70,
+                    color: Colors.white,
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Container(
-                height: 10,
-                width: 70,
-                color: Colors.white,
-              ),
-            ],
-          ),
-        )
-      ],
+            )
+          ],
+        );
+      },
+
     ),
   );
 }

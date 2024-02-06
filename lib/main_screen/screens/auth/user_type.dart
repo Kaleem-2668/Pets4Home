@@ -95,16 +95,7 @@ class _UserTypeState extends State<UserType> {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  'What type of user are you?',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
+
                 const SizedBox(
                   height: 10,
                 ),
@@ -126,6 +117,16 @@ class _UserTypeState extends State<UserType> {
                   onCountryChanged: (country) {
                     print('Country changed to: ${country.name}');
                   },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  'What type of user are you?',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

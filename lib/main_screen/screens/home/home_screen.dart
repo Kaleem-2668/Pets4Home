@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DataBaseHelper dbHelper=DataBaseHelper.instance;
+    // DataBaseHelper dbHelper = DataBaseHelper.instance;
     return BackdropScaffold(
       backLayerBackgroundColor: Colors.green.shade100,
       appBar: BackdropAppBar(

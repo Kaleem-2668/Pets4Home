@@ -288,6 +288,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   bool isCategorySelected = false;
   late Future<List<CategoryModel>> categoryDataFuture;
   int? selectedCategoryId;
+  TextEditingController searchController = TextEditingController();
 
 
   @override
@@ -297,6 +298,20 @@ class _ArticleScreenState extends State<ArticleScreen> {
     fetchArticleData();
     // Initialize the Future for category data
     categoryDataFuture = articleViewModel.fetchCategoryData();
+  }
+  void filterArticles(String query) {
+    if (query.isNotEmpty) {
+      List<ArticleModel> filteredArticles = articles
+          .where((article) =>
+          article.title!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+      setState(() {
+        articles = filteredArticles;
+      });
+    } else {
+      // If the search query is empty, reset to the original list of articles
+      fetchArticleData();
+    }
   }
 
   // Function to fetch articles using the ViewModel
@@ -491,132 +506,133 @@ class _ArticleScreenState extends State<ArticleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: SafeArea(
-          child: TextFormField(
-            onChanged: (query) {
-              //filterArticles(query);
-            },
-            style: const TextStyle(color: Colors.white, fontSize: 18.0),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 15,
-              ),
-              hintText: 'Search for your Article',
-              hintStyle: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-              suffixIcon: const Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Colors.white),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(
-                    color: Colors.white), // Set focused border color
-              ),
+        title: TextFormField(
+          controller: searchController,
+          onChanged: (query) {
+            filterArticles(query); // Call the filterArticles function
+          },
+          style: const TextStyle(color: Colors.white, fontSize: 18.0),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 15,
+            ),
+            hintText: 'Search for your Article',
+            hintStyle: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+            suffixIcon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: const BorderSide(color: Colors.white),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: const BorderSide(
+                  color: Colors.white), // Set focused border color
             ),
           ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Stack(
-              children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    enableInfiniteScroll: true,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 4),
-                    autoPlayAnimationDuration:
-                    const Duration(milliseconds: 800),
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    enlargeCenterPage: true,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              Stack(
+                children: [
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      enableInfiniteScroll: true,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 4),
+                      autoPlayAnimationDuration:
+                      const Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      enlargeCenterPage: true,
+                    ),
+                    items: [
+                      'images/slider_images/dogArt.jpg',
+                      'images/slider_images/slide_a.jpg',
+                      'images/slider_images/slideb.jpg',
+                    ].map((String item) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return ClipRRect(
+                            borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                            child: Image.asset(
+                              item,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
                   ),
-                  items: [
-                    'images/slider_images/dogArt.jpg',
-                    'images/slider_images/slide_a.jpg',
-                    'images/slider_images/slideb.jpg',
-                  ].map((String item) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return ClipRRect(
-                          borderRadius:
-                          const BorderRadius.all(Radius.circular(20)),
-                          child: Image.asset(
-                            item,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20,),
-            FutureBuilder<List<CategoryModel>>(
-                future: categoryDataFuture,
-              builder: (BuildContext context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade200,
-                      child: _buildShimmerCard(),
-                    );
-                } else if (snapshot.hasError) {
-                  return const Text('error');
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: snapshot.data!.map((categoryData) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 5.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Handle category selection
-                              onCategorySelected(categoryData.categoryid ?? 0);
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: selectedCategoryId == categoryData.categoryid
-                                    ? Colors.green.shade700// Set the selected category color
-                                    : Colors.green.shade300,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 2),
-                                child: Text(
-                                  categoryData.categoryName.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                ],
+              ),
+              const SizedBox(height: 20,),
+              FutureBuilder<List<CategoryModel>>(
+                  future: categoryDataFuture,
+                builder: (BuildContext context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade200,
+                        child: _buildShimmerCard(),
+                      );
+                  } else if (snapshot.hasError) {
+                    return const Text('error');
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: snapshot.data!.map((categoryData) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 5.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Handle category selection
+                                onCategorySelected(categoryData.categoryid ?? 0);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: selectedCategoryId == categoryData.categoryid
+                                      ? Colors.green.shade700// Set the selected category color
+                                      : Colors.green.shade300,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0, vertical: 2),
+                                  child: Text(
+                                    categoryData.categoryName.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 10),
-            // Display either articles or category-wise data based on the state
-            buildContent(),
-          ],
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
+              // Display either articles or category-wise data based on the state
+              buildContent(),
+            ],
+          ),
         ),
       ),
     );
@@ -654,3 +670,4 @@ class _ArticleScreenState extends State<ArticleScreen> {
     );
   }
 }
+
