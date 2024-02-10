@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/category_model.dart';
 
 import '../../../models/article_model.dart';
-import '../../../view_model/article_view_model.dart';
+import '../../../view_model/articles/article_view_model.dart';
 
 class ArticleInfo extends StatefulWidget {
   ArticleInfo({Key? key, required this.articleModelList,}) : super(key: key);

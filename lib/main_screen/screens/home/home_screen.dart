@@ -7,7 +7,7 @@ import 'package:pets_4_home/models/pets_category_model.dart';
 import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../controller/change_language.dart';
+import '../../../provider/language_provider.dart';
 import '../auth/login_screen.dart';
 import '../drawer/breed_screen.dart';
 import 'home_info_screen.dart';

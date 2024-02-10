@@ -264,7 +264,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/models/category_wise_model.dart';
-import 'package:pets_4_home/view_model/article_view_model.dart';
+import 'package:pets_4_home/view_model/articles/article_view_model.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../models/article_model.dart';

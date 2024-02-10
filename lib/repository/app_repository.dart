@@ -1,14 +1,10 @@
 import 'dart:convert';
-
 import 'package:pets_4_home/models/category_model.dart';
 import 'package:pets_4_home/models/category_wise_model.dart';
 import 'package:pets_4_home/models/pets_api_category_model.dart';
-
 import '../models/article_model.dart';
 import 'package:http/http.dart'as http;
-
 import '../models/breed_category_model.dart';
-import '../models/shared_post_model.dart';
 
 class AppRepository {
   String baseUrl = 'https://wowpetspalace.com/dashboard';
@@ -83,10 +79,5 @@ class AppRepository {
     }
     throw Exception('error');
   }
-
-
-
-
-
 }
 

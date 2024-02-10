@@ -24,10 +24,10 @@ import 'package:pets_4_home/models/category_model.dart';
 import 'package:pets_4_home/models/pets_api_category_model.dart';
 import 'package:pets_4_home/repository/app_repository.dart';
 
-import '../models/article_model.dart';
-import '../models/breed_category_model.dart';
-import '../models/shared_post_model.dart';
-import '../models/category_wise_model.dart';
+import '../../models/article_model.dart';
+import '../../models/breed_category_model.dart';
+import '../../models/shared_post_model.dart';
+import '../../models/category_wise_model.dart';
 
 class ArticleViewModel {
   final repo = AppRepository();

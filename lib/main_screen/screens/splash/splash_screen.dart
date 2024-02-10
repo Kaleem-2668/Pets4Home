@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _initApp() async {
     var status = await Permission.location.request();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (status == PermissionStatus.granted) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) {
@@ -37,8 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          color: const Color(0xff8291f9),
+        child: SizedBox(
+          // color: const Color(0xff8291f9),
           width: double.infinity,
           height: double.infinity,
           child: Stack(
@@ -54,24 +54,33 @@ class _SplashScreenState extends State<SplashScreen> {
                       style: TextStyle(
                         fontSize: 24,
                         height: 1.5,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFFDEE1FE),
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff2E7D32),
                         letterSpacing: 0.84,
+
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Helping you \nto keep your bestie \nstay healthy!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        height: 1.5,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFFDEE1FE),
-                        letterSpacing: 0.84,
-                      ),
-                    ),
+                    SizedBox(height: 30,),
+                    Text('   Helping You To Keep\nYour Bestie Stay Healthy!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          height: 1.5,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff2E7D32),
+                          letterSpacing: 0.84,
+                        ),
+                    )
+
+                    // Text(
+                    //   'Helping you \nto keep your bestie \nstay healthy!',
+                    //   style: TextStyle(
+                    //     fontSize: 24,
+                    //     height: 1.5,
+                    //     fontWeight: FontWeight.normal,
+                    //     color: Color(0xFFDEE1FE),
+                    //     letterSpacing: 0.84,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

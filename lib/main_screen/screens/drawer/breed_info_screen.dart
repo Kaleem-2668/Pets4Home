@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../models/breed_category_model.dart';
-import '../../../view_model/article_view_model.dart';
+import '../../../view_model/articles/article_view_model.dart';
 
 class BreedInfoScreen extends StatefulWidget {
   final int breedId;
@@ -15,6 +16,13 @@ class BreedInfoScreen extends StatefulWidget {
 
 class _BreedInfoScreenState extends State<BreedInfoScreen> {
   final articleViewModel = ArticleViewModel();
+  late Future<List<BreedCategoryModel>> breedCategoryFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    breedCategoryFuture = articleViewModel.fetchBreedCategoryData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,7 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
         title: const Text('Breed Information'),
       ),
       body: FutureBuilder(
-        future: articleViewModel.fetchBreedCategoryData(),
+        future: breedCategoryFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildLoadingState();
@@ -37,15 +45,12 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
             );
           } else {
             List<BreedCategoryModel> breedCategoryList =
-                (snapshot.data as List).cast<BreedCategoryModel>();
+            (snapshot.data as List).cast<BreedCategoryModel>();
 
-            BreedCategoryModel? selectedBreed;
-            for (var breed in breedCategoryList) {
-              if (breed.breedId == widget.breedId) {
-                selectedBreed = breed;
-                break;
-              }
-            }
+            BreedCategoryModel? selectedBreed = breedCategoryList.firstWhere(
+                  (BreedCategoryModel breed) => breed.breedId == widget.breedId,
+              // orElse: () => null,
+            );
 
             if (selectedBreed == null) {
               return const Center(
@@ -57,21 +62,44 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CachedNetworkImage(
-                    width: double.infinity,
-                    imageUrl: selectedBreed.breedImages != null &&
-                            selectedBreed.breedImages!.isNotEmpty
-                        ? "https://wowpetspalace.com/dashboard/${selectedBreed.breedImages![0]}"
-                        : "https://example.com/placeholder_image.jpg",
-                    // Provide a placeholder URL or a local asset path
-                    placeholder: (context, url) =>
-                        const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      height: MediaQuery.of(context).size.height*.40,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 3),
+                      autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                    ),
+                    items: selectedBreed.breedImages?.map((image) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return CachedNetworkImage(
+                            width: double.infinity,
+                            // height: MediaQuery.of(context).size.height*.10,
+                            imageUrl: "https://wowpetspalace.com/dashboard/$image",
+                            placeholder: (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      );
+                    }).toList() ?? [],
                   ),
+                  const SizedBox(height: 10),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      selectedBreed.categoryTitle ?? '',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
                       selectedBreed.breedTitle ?? '',
                       style: const TextStyle(
@@ -81,7 +109,7 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0,),
                     child: Text(
                       selectedBreed.breedDescription ?? '',
                       style: const TextStyle(
@@ -109,7 +137,7 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
-            height:400 ,
+            height: 400,
             color: Colors.white,
           ),
           const SizedBox(height: 16),
@@ -131,5 +159,4 @@ class _BreedInfoScreenState extends State<BreedInfoScreen> {
     );
   }
 }
-
 
