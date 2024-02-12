@@ -1,5 +1,6 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
+import 'package:pets_4_home/main_screen/screens/appBar/setting/profile_screen.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/main_screen/screens/home/favorite_screen.dart';
 import 'package:pets_4_home/models/shared_post_model.dart';
@@ -14,7 +15,7 @@ import 'home_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key,}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -96,7 +97,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                return const ProfileScreen();
+              }));
+
+            },
           ),
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),
