@@ -1,27 +1,3 @@
-// import 'package:flutter/material.dart';
-//
-// class UpdateInfo extends StatefulWidget {
-//   const UpdateInfo({super.key});
-//
-//   @override
-//   State<UpdateInfo> createState() => _UpdateInfoState();
-// }
-//
-// class _UpdateInfoState extends State<UpdateInfo> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Column(
-//         children: [
-//           TextFormField(
-//
-//           )
-//
-//         ],
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 
 class ReusableTextFormField extends StatelessWidget {
@@ -39,13 +15,19 @@ class ReusableTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15)
+          ),
+          labelText: labelText,
+        ),
+        keyboardType: keyboardType,
+        obscureText: obscureText,
       ),
-      keyboardType: keyboardType,
-      obscureText: obscureText,
     );
   }
 }
@@ -66,12 +48,39 @@ class _UpdateInfoState extends State<UpdateInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 70,
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.red,
+                      backgroundImage: const AssetImage('images/kaleem.jpg'),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.green,
+                            width: 2,
+                          ),
+                        ),
+                      )),
+                  ]),
+              const Positioned(
+                  bottom: 2,
+                  right: 10,
+                  child: Icon(
+                    Icons.camera_alt,
+                    color: Colors.black,
+                    size: 40,
+                  )),
+              const SizedBox(height: 30,),
               ReusableTextFormField(
                 controller: _usernameController,
                 labelText: 'Username',
@@ -88,10 +97,11 @@ class _UpdateInfoState extends State<UpdateInfo> {
               ReusableTextFormField(
                 controller: _cityController,
                 labelText: 'City',
-                obscureText: true,
               ),
-              // Add more ReusableTextFormField widgets as needed
+
             ],
+
+
           ),
         ),
       ),

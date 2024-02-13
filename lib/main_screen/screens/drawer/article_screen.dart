@@ -294,9 +294,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch articles when the screen is initialized
     fetchArticleData();
-    // Initialize the Future for category data
     categoryDataFuture = articleViewModel.fetchCategoryData();
   }
   void filterArticles(String query) {
@@ -309,12 +307,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
         articles = filteredArticles;
       });
     } else {
-      // If the search query is empty, reset to the original list of articles
       fetchArticleData();
     }
   }
-
-  // Function to fetch articles using the ViewModel
   void fetchArticleData() async {
     try {
       List<ArticleModel> fetchedArticles =
@@ -327,17 +322,12 @@ class _ArticleScreenState extends State<ArticleScreen> {
       print('Error fetching articles: $e');
     }
   }
-
-  // Function to fetch categories using the ViewModel
   void fetchCategoryData() async {
     try {
       List<CategoryModel> fetchedCategories =
       await articleViewModel.fetchCategoryData();
-      // setState(() {
-      //   categories = fetchedCategories;
-      // });
+
     } catch (e) {
-      // Handle error
       print('Error fetching categories: $e');
     }
   }
