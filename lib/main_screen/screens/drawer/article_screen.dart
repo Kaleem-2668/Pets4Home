@@ -332,7 +332,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
     }
   }
 
-  // Function to handle category selection
   void onCategorySelected(int categoryId) async {
     try {
       CategoryWiseModel fetchedCategoryWiseData =
@@ -348,9 +347,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
     }
   }
 
-
-
-  // Function to reset to articles view
   void resetToArticlesView() {
     setState(() {
       isCategorySelected = false;
@@ -366,9 +362,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       return buildArticleList();
     }
   }
-
-
-  // Function to display articles
   Widget buildArticleList() {
     return ListView.builder(
       shrinkWrap: true,
@@ -435,8 +428,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       },
     );
   }
-
-  // Function to display category-wise data
   Widget buildCategoryWiseList() {
      return ListView.builder(
       shrinkWrap: true,
@@ -499,7 +490,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
         title: TextFormField(
           controller: searchController,
           onChanged: (query) {
-            filterArticles(query); // Call the filterArticles function
+            filterArticles(query);
           },
           style: const TextStyle(color: Colors.white, fontSize: 18.0),
           decoration: InputDecoration(
@@ -521,7 +512,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: const BorderSide(
-                  color: Colors.white), // Set focused border color
+                  color: Colors.white),
             ),
           ),
         ),

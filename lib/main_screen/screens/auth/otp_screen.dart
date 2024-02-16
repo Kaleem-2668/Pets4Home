@@ -12,12 +12,18 @@ class OtpScreen extends StatefulWidget {
     Key? key,
     required this.phoneNumber,
     required this.verificationId,
-    required this.userName,
+    required this.firstName,
+    required this.lastName, required this.userType, required this.userEmail, required this.userPassword, required this.confirmPass,
   }) : super(key: key);
 
   final String phoneNumber;
   final String verificationId;
-  final String userName;
+  final String firstName;
+  final String lastName;
+  final String userType;
+  final String userEmail;
+  final String userPassword;
+  final String confirmPass;
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -59,10 +65,8 @@ class _OtpScreenState extends State<OtpScreen> {
       isResendButtonClickable = false;
     });
 
-    // Start the countdown timer
     startCountDown();
 
-    // Allow the "RESEND" button to be clickable after the countdown reaches zero
     Future.delayed(const Duration(seconds: 30), () {
       setState(() {
         isResendButtonClickable = true;
@@ -140,6 +144,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -164,7 +169,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Text('Hello, ${widget.userName}'),
+                Text('Hello, ${widget.firstName}'),
                 const SizedBox(
                   height: 10,
                 ),

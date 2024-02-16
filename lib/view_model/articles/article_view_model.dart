@@ -1,33 +1,11 @@
-// import 'package:pets_4_home/models/category_model.dart';
-// import 'package:pets_4_home/repository/app_repository.dart';
-//
-// import '../models/article_model.dart';
-// import '../models/category_wise_model.dart';
-//
-// class ArticleViewModel{
-//   final repo = AppRepository();
-//   Future<List<ArticleModel>> fetchArticleData(){
-//     final response= repo.getArticlesApi();
-//     return response;
-//   }
-//   Future<List<CategoryModel>> fetchCategoryData(){
-//     final response = repo.getCategoryApi();
-//     return  response;
-//   }
-//   Future<List<CategoryWiseModel>> fetchCategoryWiseData(){
-//     final response = repo.getCategoryWiseApi();
-//     return  response;
-//   }
-// }
-
 import 'package:pets_4_home/models/category_model.dart';
 import 'package:pets_4_home/models/pets_api_category_model.dart';
 import 'package:pets_4_home/repository/app_repository.dart';
 
 import '../../models/article_model.dart';
 import '../../models/breed_category_model.dart';
-import '../../models/shared_post_model.dart';
 import '../../models/category_wise_model.dart';
+import '../../models/register_user_model.dart';
 
 class ArticleViewModel {
   final repo = AppRepository();
@@ -52,6 +30,10 @@ class ArticleViewModel {
   }
   Future<List<PetsApiCategory>> fetchPetsApiCategory() async {
     final response = await repo.getPetApiCategoryApi();
+    return response;
+  }
+  Future<RegisterModel> registerUser(String username, String password, String email) async {
+    final response = await repo.registerUser(username, password, email);
     return response;
   }
 }

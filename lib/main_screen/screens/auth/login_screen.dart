@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.black,
                         voidCallback: () {
                           Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                            return const SignUp();
+                            return SignUp();
                           }));
                         },
                         buttonColor: Colors.yellow),

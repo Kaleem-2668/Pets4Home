@@ -5,6 +5,7 @@ import 'package:pets_4_home/models/pets_api_category_model.dart';
 import '../models/article_model.dart';
 import 'package:http/http.dart'as http;
 import '../models/breed_category_model.dart';
+import '../models/register_user_model.dart';
 
 class AppRepository {
   String baseUrl = 'https://wowpetspalace.com/dashboard';
@@ -79,5 +80,30 @@ class AppRepository {
     }
     throw Exception('error');
   }
+  Future<RegisterModel> registerUser(String username, String password, String email) async {
+    String url = '$baseUrl/authUser/registeruser';
+    Map<String, String> body = {
+      'username': username,
+      'password': password,
+      'email': email,
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic jsonResponse = jsonDecode(response.body);
+      print('**************************Register API Response***************************************');
+      print(jsonResponse.toString());
+      return RegisterModel.fromJson(jsonResponse);
+    } else {
+      // Handle the case where registration fails
+      print('Error in Register API response: ${response.body}');
+      throw Exception('Error in Register API response');
+    }
+  }
+
 }
 
