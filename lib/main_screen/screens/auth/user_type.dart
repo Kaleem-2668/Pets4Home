@@ -1,9 +1,10 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:pets_4_home/view_model/auth/auth_view_model.dart';
+import 'package:provider/provider.dart';
 import '../../../widgets/constant_button.dart';
 import 'otp_screen.dart';
 
@@ -31,6 +32,8 @@ class _UserTypeState extends State<UserType> {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  FocusNode firstNameFocus = FocusNode();
+  FocusNode lastNameFocus = FocusNode();
   var phone = '';
 
   FocusNode focusNode = FocusNode();
@@ -39,9 +42,7 @@ class _UserTypeState extends State<UserType> {
 
   @override
   Widget build(BuildContext context) {
-    print('User Email////////////////////: ${widget.userEmail}');
-    print('User Email/////////////////////: ${widget.userPassword}');
-    print('User Email/////////////////////: ${widget.confirmPass}');
+    final authViewModel = Provider.of<AuthViewModel>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -71,14 +72,27 @@ class _UserTypeState extends State<UserType> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      // ReusableTextFormField(controller:nameController, labelText: 'First Name',
+                      //   validator:(value){
+                      //   if(value == null || value.isEmpty){
+                      //     return 'please enter your first name';
+                      //   }
+                      //   return null;
+                      //   }
+                      //
+                      // ),
                       TextFormField(
                         controller: nameController,
+
                         decoration: InputDecoration(
                           labelText: 'First Name',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
+                        onFieldSubmitted: (value){
+                          FocusScope.of(context).requestFocus(lastNameFocus);
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your first name';
@@ -97,6 +111,9 @@ class _UserTypeState extends State<UserType> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
+                        onFieldSubmitted: (value){
+                          FocusScope.of(context).requestFocus();
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your last name';
@@ -250,7 +267,21 @@ class _UserTypeState extends State<UserType> {
                               Fluttertoast.showToast(
                                   msg: 'Otp sent to your phone');
                               UserType.verify = verificationId;
-                              // await _registerUser();
+                              Map data ={
+                                'firstName': nameController.text.toString(),
+                                'lastName': lastNameController.text.toString(),
+                                'email': widget.userEmail.toString(),
+                                'password': widget.userPassword.toString(),
+                                'phoneNumber': phone.toString(),
+                                'status': '1',
+                                'token': 'asdfsdfasdfasdf',
+                                'devicetype': '1',
+                                'user_type':'1',
+                                'imageUrl': ''
+
+                              };
+                              authViewModel.registerApi(data,context);
+                               // await _registerUser();
                               Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -355,6 +386,8 @@ class _UserTypeState extends State<UserType> {
   //       'status': '1',
   //       'token': 'asdfsdfasdfasdf',
   //       'devicetype': '1',
+  //       'user_type':'1',
+  //       'imageUrl': 'https://stock.adobe.com/images/cats-and-dogs-peeking-over-white-web-banner/269478900'
   //     };
   //
   //     final response = await http.post(
@@ -365,6 +398,7 @@ class _UserTypeState extends State<UserType> {
   //
   //     if (response.statusCode == 200) {
   //       RegisterModel registerResponse = RegisterModel.fromJson(jsonDecode(response.body));
+  //       print('//////////${response.body}');
   //
   //       if (registerResponse.message == 'success') {
   //         print('User registration successful');
@@ -385,9 +419,5 @@ class _UserTypeState extends State<UserType> {
   //     throw Exception('Error during user registration');
   //   }
   // }
-
-
-
-
 }
 

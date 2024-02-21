@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pets_4_home/provider/language_provider.dart';
 import 'package:pets_4_home/services/database_helper.dart';
+import 'package:pets_4_home/view_model/auth/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
@@ -31,7 +32,9 @@ class MyApp extends StatelessWidget {
 
     return  MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_)=>ChangeLanguage())
+          ChangeNotifierProvider(create: (_)=>ChangeLanguage()),
+          ChangeNotifierProvider(create: (_)=>AuthViewModel()),
+          // ChangeNotifierProvider(create: (_)=>UserViewModel()),
         ],
         child: Consumer<ChangeLanguage>(
           builder: (context, provider, child){

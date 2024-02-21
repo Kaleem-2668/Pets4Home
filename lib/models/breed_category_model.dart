@@ -21,7 +21,7 @@ class BreedCategoryModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['breed_id'] = breedId;
     data['breed_title'] = breedTitle;
     data['breed_description'] = breedDescription;

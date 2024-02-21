@@ -623,7 +623,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
+      itemCount: 7,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.all(8.0),

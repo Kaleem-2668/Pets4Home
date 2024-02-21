@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/appBar/setting/update_info_screen.dart';
-import 'package:pets_4_home/main_screen/screens/home/home_screen.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,6 +12,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    // final userPreference = Provider.of<UserViewModel>(context);
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -62,9 +63,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               buildText('Privacy & Policy', () {}),
               buildText('Help', () {}),
               buildText('LogOut', () {
-                Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                  return const HomeScreen();
-                }));
+                // userPreference.remove().then((value) => Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                //   return const LoginScreen();
+                // })));
+
+
+
               }),
             ],
           ),

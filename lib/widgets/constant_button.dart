@@ -60,9 +60,11 @@ class ConstantButton extends StatelessWidget {
               const SizedBox(
                 width: 70,
               ),
-              Text(
-                text,
-                style: TextStyle(color: color),
+              Center(
+                child: Text(
+                  text,
+                  style: TextStyle(color: color),
+                ),
               ),
             ],
           ),

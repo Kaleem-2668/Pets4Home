@@ -10,10 +10,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+   // SplashService splashServices = SplashService();
   @override
   void initState() {
     super.initState();
     _initApp();
+     // splashServices.checkAuthentication(context);
   }
 
   void _initApp() async {
@@ -31,6 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       );
     }
+
   }
 
   @override
@@ -70,17 +73,6 @@ class _SplashScreenState extends State<SplashScreen> {
                           letterSpacing: 0.84,
                         ),
                     )
-
-                    // Text(
-                    //   'Helping you \nto keep your bestie \nstay healthy!',
-                    //   style: TextStyle(
-                    //     fontSize: 24,
-                    //     height: 1.5,
-                    //     fontWeight: FontWeight.normal,
-                    //     color: Color(0xFFDEE1FE),
-                    //     letterSpacing: 0.84,
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

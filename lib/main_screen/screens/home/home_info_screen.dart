@@ -24,13 +24,19 @@ class _HomeInfoState extends State<HomeInfo> {
   }
 
   void checkIfFavorite() async {
-    if (widget.breedCategoryModel != null) {
-      bool isFav = await DataBaseHelper.instance.isFavorite(widget.breedCategoryModel!.id);
+    int? postId = widget.breedCategoryModel?.id;
+
+    if (postId != null) {
+      bool isFav = await DataBaseHelper.instance.isFavorite(postId);
       setState(() {
         isFavorite = isFav;
       });
+    } else {
+      // Handle the case where postId is null, if needed
+      print('Post ID is null');
     }
   }
+
   void toggleFavorite() async {
     if (mounted) {
       if (isFavorite) {
@@ -50,11 +56,11 @@ class _HomeInfoState extends State<HomeInfo> {
   void addToFavorites() async {
     SharedPostModel favorite = SharedPostModel(
       id: widget.breedCategoryModel!.id,
-      imageUrl: widget.breedCategoryModel!.imageUrl.toString(),
-      titleText: widget.breedCategoryModel!.titleText,
-      subtitleText: widget.breedCategoryModel!.subtitleText,
-      breedText: widget.breedCategoryModel!.breedText,
-      priceText: widget.breedCategoryModel!.priceText,
+      imagePaths: widget.breedCategoryModel!.imagePaths,
+      title: widget.breedCategoryModel!.title,
+      description: widget.breedCategoryModel!.description,
+      categoryTitle: widget.breedCategoryModel!.categoryTitle,
+      price: widget.breedCategoryModel!.price,
     );
 
     int result = await DataBaseHelper.instance.addPets(favorite);
@@ -72,23 +78,28 @@ class _HomeInfoState extends State<HomeInfo> {
   }
 
   void removeFromFavorites() async {
-    int result = await DataBaseHelper.instance.removePet(widget.breedCategoryModel!.id);
-    if (result > 0) {
-      Fluttertoast.showToast(
-        msg: 'Removed from favorites',
-        backgroundColor: Colors.red.shade700,
-      );
+    int? categoryId = widget.breedCategoryModel!.categoryid;
 
-      // Navigator.pop(context, true);
+    if (categoryId != null) {
+      int result = await DataBaseHelper.instance.removePet(categoryId);
+
+      if (result > 0) {
+        Fluttertoast.showToast(
+          msg: 'Removed from favorites',
+          backgroundColor: Colors.red.shade700,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: 'Not removed',
+          backgroundColor: Colors.red.shade700,
+        );
+      }
     } else {
-      Fluttertoast.showToast(
-        msg: 'Not removed',
-        backgroundColor: Colors.red.shade700,
-      );
-      // Inform the FavoriteScreen that the removal was not successful
+      // Handle the case where categoryId is null, if needed
+      print('Category ID is null');
+    }
+  }
 
-    }
-    }
 
 
 
@@ -101,7 +112,7 @@ class _HomeInfoState extends State<HomeInfo> {
           child: Column(
             children: [
               Image(
-                image: AssetImage(widget.breedCategoryModel!.imageUrl.toString()),
+                image: AssetImage(widget.breedCategoryModel!.imagePaths.toString()),
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 300,
@@ -116,7 +127,7 @@ class _HomeInfoState extends State<HomeInfo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.breedCategoryModel!.breedText,
+                      widget.breedCategoryModel!.title.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -144,7 +155,7 @@ class _HomeInfoState extends State<HomeInfo> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          widget.breedCategoryModel!.priceText,
+                          widget.breedCategoryModel!.price.toString(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 19,

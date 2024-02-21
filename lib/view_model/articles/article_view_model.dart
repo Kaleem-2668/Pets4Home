@@ -1,11 +1,12 @@
 import 'package:pets_4_home/models/category_model.dart';
 import 'package:pets_4_home/models/pets_api_category_model.dart';
+import 'package:pets_4_home/models/shared_post_model.dart';
 import 'package:pets_4_home/repository/app_repository.dart';
 
 import '../../models/article_model.dart';
 import '../../models/breed_category_model.dart';
 import '../../models/category_wise_model.dart';
-import '../../models/register_user_model.dart';
+import '../../models/user_model.dart';
 
 class ArticleViewModel {
   final repo = AppRepository();
@@ -32,8 +33,8 @@ class ArticleViewModel {
     final response = await repo.getPetApiCategoryApi();
     return response;
   }
-  Future<RegisterModel> registerUser(String username, String password, String email) async {
-    final response = await repo.registerUser(username, password, email);
+  Future<List<SharedPostModel>> fetchSharedPostsApi() async {
+    final response = await repo.getSharedPostApi();
     return response;
   }
 }

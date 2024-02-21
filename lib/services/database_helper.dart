@@ -41,7 +41,7 @@ class DataBaseHelper {
       Database db = await instance.database;
       int result = await db.rawInsert(
           'INSERT INTO $tableName(id, image, title, subtitle, breedText, price) VALUES(?,?,?,?,?,?)',
-          [favorite.id,favorite.imageUrl, favorite.titleText, favorite.subtitleText, favorite.breedText, favorite.priceText]);
+          [favorite.id,favorite.imagePaths, favorite.title, favorite.description, favorite.categoryTitle, favorite.price]);
       return result;
     } catch (e) {
       return -1;
@@ -77,11 +77,11 @@ class DataBaseHelper {
       List<SharedPostModel> favorites = result.map((map) {
         return SharedPostModel(
           id: map['id'],
-          imageUrl: map['image'],
-          titleText: map['title'],
-          subtitleText: map['subtitle'],
-          breedText: map['breedText'],
-          priceText: map['price'],
+          imagePaths: map['image'],
+          title: map['title'],
+          description: map['subtitle'],
+          categoryTitle: map['breedText'],
+          price: map['price'],
         );
       }).toList();
 

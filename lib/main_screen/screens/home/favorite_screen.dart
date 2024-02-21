@@ -63,21 +63,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: Image.asset(
-                        favoritePet.imageUrl,
+                        favoritePet.imagePaths.toString(),
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
                       ),
                     ),
-                    title: Text(favoritePet.breedText),
-                    subtitle: Text(favoritePet.priceText),
+                    title: Text(favoritePet.title.toString()),
+                    subtitle: Text(favoritePet.price.toString()),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.green),
                       onPressed: ()  {
-                         DataBaseHelper.instance.removePet(favoritePet.id);
-                        setState(() {
-                          favoritePets = DataBaseHelper.instance.getFavoritePets();
-                        });
+                        if (favoritePet.id != null) {
+                          DataBaseHelper.instance.removePet(favoritePet.categoryid!);
+                          setState(() {
+                            favoritePets = DataBaseHelper.instance.getFavoritePets();
+                          });
+                        }
+
                       },
                     ),
                   ),

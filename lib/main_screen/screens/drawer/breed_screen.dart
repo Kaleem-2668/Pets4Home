@@ -106,51 +106,53 @@ class _BreedScreenState extends State<BreedScreen> {
               selectedPet = petsApi.first;
             }
 
-            return Row(
-              children: [
-                for (PetsApiCategory pet in petsApi)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: CachedNetworkImage(
-                                    imageUrl: pet.image != null &&
-                                        pet.image!.isNotEmpty
-                                        ? "https://wowpetspalace.com/dashboard/${pet.image}"
-                                        : "https://example.com/placeholder_image.jpg",
-                                    placeholder: (context, url) =>
-                                    const Center(
-                                      child: CircularProgressIndicator(),
+            return Expanded(
+              child: Row(
+                children: [
+                  for (PetsApiCategory pet in petsApi)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: Container(
+                                height: 80,
+                                width: 80,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: CachedNetworkImage(
+                                      imageUrl: pet.image != null &&
+                                          pet.image!.isNotEmpty
+                                          ? "https://wowpetspalace.com/dashboard/${pet.image}"
+                                          : "https://example.com/placeholder_image.jpg",
+                                      placeholder: (context, url) =>
+                                      const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                      fit: BoxFit.cover,
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Text(pet.title ?? ''),
-                      ],
+                          Text(pet.title ?? ''),
+                        ],
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             );
           }
         },

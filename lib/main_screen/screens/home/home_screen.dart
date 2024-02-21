@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/appBar/setting/profile_screen.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
 import 'package:pets_4_home/main_screen/screens/home/favorite_screen.dart';
-import 'package:pets_4_home/models/shared_post_model.dart';
 import 'package:pets_4_home/models/pets_category_model.dart';
-import 'package:pets_4_home/services/database_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../models/shared_post_model.dart';
 import '../../../provider/language_provider.dart';
 import '../auth/login_screen.dart';
+import '../drawer/article_info_screen.dart';
 import '../drawer/breed_screen.dart';
-import 'home_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,17 +26,10 @@ enum Language {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<SharedPostModel>> favoritePets;
   final TextEditingController _locationController = TextEditingController();
   bool enable = true;
   bool _mounted = true;
 
-  @override
-  void initState() {
-    super.initState();
-    favoritePets = DataBaseHelper.instance.getFavoritePets();
-    loadData();
-  }
   @override
   void dispose() {
     _mounted = false;
@@ -46,13 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadData() async {
     await Future.delayed(const Duration(seconds: 4));
-
-    // Check if the widget is still mounted before calling setState
     if (_mounted) {
       setState(() {
         enable = false;
       });
     }
+
   }
 
   @override
@@ -263,15 +254,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           TextFormField(
                             onTap: () {
-                              showSearch(context: context, delegate: Search());
+
                             },
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 15),
                               hintText: AppLocalizations.of(context)!.search,
                               suffixIcon: InkWell(
-                                  onTap: () => showSearch(
-                                      context: context, delegate: Search()),
+                                  onTap: () {
+
+                                  },
+
                                   child: const Icon(Icons.search)),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
@@ -331,15 +324,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     SizedBox(
                       height: 90,
-                      child: FutureBuilder(
-                        future: loadData(),
-                        builder: (context, snapshot) {
-                          return enable
-                              ? _buildPetsCategoryShimmer()
-                              : _buildPetsCategoryList();
-                        },
-                      ),
+                       child:
+                      // enable ? _buildPetsCategoryShimmer() :
+                       _buildPetsCategoryList(),
                     ),
+
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
@@ -350,14 +339,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    FutureBuilder(
-                      future: loadData(),
+                    FutureBuilder<List<SharedPostModel>>(
+                      future: articleViewModel.fetchSharedPostsApi(),
                       builder: (context, snapshot) {
-                        return enable
-                            ? _buildBreedListShimmer()
-                            : _buildBreedCategoryList();
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return _buildPetsGridShimmer(); // Add shimmer while loading
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.hasData) {
+                          return _buildPetsGrid(snapshot.data!); // Pass the data to the grid
+                        } else {
+                          return const Text('No data available');
+                        }
                       },
-                    ),
+
+                    )
+
                   ],
                 ),
               ),
@@ -435,269 +432,108 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBreedListShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: GridView.builder(
-        itemCount: breedCategoryModel.length,
-        // Adjust the count as needed
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 2,
-          childAspectRatio: 0.6,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            elevation: 0.3,
-            shadowColor: Colors.grey,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 90,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Container(
-                  height: 10,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  height: 10,
-                  color: Colors.white,
-                ),
-                Container(
-                  height: 20,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  height: 10,
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
-  Widget _buildBreedCategoryList() {
-    return GridView.builder(
-      itemCount: breedCategoryModel.length,
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 2,
-        childAspectRatio: 0.6,
-      ),
-      itemBuilder: (BuildContext context, int index) {
-        final breedList = breedCategoryModel[index];
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) {
-                  return HomeInfo(
-                    breedCategoryModel: breedList,
-                  );
-                },
-              ),
-            );
-          },
-          child: Card(
-            elevation: 0.3,
-            shadowColor: Colors.grey,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 90,
-                    child: Image(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        breedCategoryModel[index].imageUrl,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(
-                    breedCategoryModel[index].titleText,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(
-                    breedCategoryModel[index].subtitleText,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(breedCategoryModel[index].breedText),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(
-                    breedCategoryModel[index].priceText,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
+
+
+
+
 }
 
-class Search extends SearchDelegate {
-  List<SharedPostModel> data = breedCategoryModel;
+Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
+  return GridView.builder(
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2, // Number of columns
+      crossAxisSpacing: 8.0,
+      mainAxisSpacing: 8.0,
+    ),
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: sharedPosts.length,
+    itemBuilder: (context, index) {
+      SharedPostModel post = sharedPosts[index];
 
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-          onPressed: () {
-            query = "";
-          },
-          icon: const Icon(Icons.clear))
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        Navigator.pop(context);
-      },
-      icon: const Icon(Icons.arrow_back),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    List<SharedPostModel> searchResults = data
-        .where((breed) =>
-            breed.titleText.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    if (query.isNotEmpty && searchResults.isNotEmpty) {
-      return ListView.builder(
-        itemCount: searchResults.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child:
-                  Image.asset(
-                    searchResults[index].imageUrl,
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.cover,
-                  )
-            ),
-              title: Text(searchResults[index].titleText),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (ctx) => HomeInfo(
-                      breedCategoryModel: searchResults[index],
-                    ),
-                  ),
-                );
-              },
-              trailing: Text(searchResults[index].priceText),
-            ),
-          );
+      return InkWell(
+        onTap: () {
+          // Handle item click
         },
+        child: Card(
+          elevation: 2.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.network(
+                post.imagePaths.toString(),
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  post.title.toString(),
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Category: ${post.categoryTitle}',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Price: \$${post.price}',
+                ),
+              ),
+            ],
+          ),
+        ),
       );
-    } else if (query.isEmpty) {
-      return const Text('');
-    } else {
-      return const ListTile(
-        title: Text('No data found'),
-      );
-    }
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<SharedPostModel> filteredSuggestions = data
-        .where((breed) =>
-            breed.titleText.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: filteredSuggestions.length,
+    },
+  );
+}
+Widget _buildPetsGridShimmer() {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, // Number of columns
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+      ),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 5, // Adjust the count as needed
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                filteredSuggestions[index].imageUrl,
-                height: 70,
-                width: 70,
-                fit: BoxFit.cover,
+          child: Column(
+            children: [
+              Container(
+                height: 50,
+                width: 50,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            title: Text(filteredSuggestions[index].titleText),
-            onTap: () {
-              query = filteredSuggestions[index].titleText;
-              showResults(context);
-            },
-            trailing: Text(filteredSuggestions[index].priceText),
+              const SizedBox(height: 8),
+              Container(
+                height: 10,
+                width: 50,
+                color: Colors.white,
+              ),
+            ],
           ),
         );
       },
-    );
-  }
+    ),
+  );
 }
+
