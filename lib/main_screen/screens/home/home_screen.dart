@@ -13,8 +13,12 @@ import '../drawer/article_info_screen.dart';
 import '../drawer/breed_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'home_info_screen.dart';
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key,}) : super(key: key);
+  const HomeScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -29,6 +33,20 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _locationController = TextEditingController();
   bool enable = true;
   bool _mounted = true;
+  final GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey();
+  late Future<List<SharedPostModel>> _futureSharedPosts;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureSharedPosts = articleViewModel.fetchSharedPostsApi();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() async {
+      _futureSharedPosts = articleViewModel.fetchSharedPostsApi();
+    });
+  }
 
   @override
   void dispose() {
@@ -43,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
         enable = false;
       });
     }
-
   }
 
   @override
@@ -78,9 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.search,
               color: Colors.white,
             ),
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
@@ -89,16 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (ctx){
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) {
                 return const ProfileScreen();
               }));
-
             },
           ),
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (ctx){
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) {
                 return const LoginScreen();
               }));
             },
@@ -155,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                  Navigator.push(context, MaterialPageRoute(builder: (ctx) {
                     return const FavoriteScreen();
                   }));
                 },
@@ -169,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                  Navigator.push(context, MaterialPageRoute(builder: (ctx) {
                     return const BreedScreen();
                   }));
                 },
@@ -253,18 +267,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           TextFormField(
-                            onTap: () {
-
-                            },
+                            onTap: () {},
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 15),
                               hintText: AppLocalizations.of(context)!.search,
                               suffixIcon: InkWell(
-                                  onTap: () {
-
-                                  },
-
+                                  onTap: () {},
                                   child: const Icon(Icons.search)),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
@@ -280,9 +289,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: TextFormField(
                                   controller: _locationController,
                                   decoration: InputDecoration(
-                                    contentPadding:
-                                        const EdgeInsets.symmetric(vertical: 15),
-                                    hintText: AppLocalizations.of(context)!.location,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    hintText:
+                                        AppLocalizations.of(context)!.location,
                                     prefixIcon: const Icon(Icons.location_on),
                                     suffixIcon: const Icon(
                                         Icons.location_searching_rounded),
@@ -324,11 +334,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     SizedBox(
                       height: 90,
-                       child:
-                      // enable ? _buildPetsCategoryShimmer() :
-                       _buildPetsCategoryList(),
+                      child:
+                          // enable ? _buildPetsCategoryShimmer() :
+                          _buildPetsCategoryList(),
                     ),
-
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
@@ -339,62 +348,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    FutureBuilder<List<SharedPostModel>>(
-                      future: articleViewModel.fetchSharedPostsApi(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return _buildPetsGridShimmer(); // Add shimmer while loading
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (snapshot.hasData) {
-                          return _buildPetsGrid(snapshot.data!); // Pass the data to the grid
-                        } else {
-                          return const Text('No data available');
-                        }
-                      },
-
+                    RefreshIndicator(
+                      key: _refreshKey,
+                      onRefresh: _refreshData,
+                      child: FutureBuilder<List<SharedPostModel>>(
+                        future: _futureSharedPosts,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return _buildPetsGridShimmer(); // Add shimmer while loading
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            return _buildPetsGrid(
+                                snapshot.data!); // Pass the data to the grid
+                          } else {
+                            return const Text('No data available');
+                          }
+                        },
+                      ),
                     )
-
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPetsCategoryShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: ListView.builder(
-        itemCount: 5, // Adjust the count as needed
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 10,
-                  width: 50,
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -431,22 +410,16 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
-
-
-
-
-
-
 }
 
 Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
   return GridView.builder(
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2, // Number of columns
-      crossAxisSpacing: 8.0,
-      mainAxisSpacing: 8.0,
+      crossAxisCount: 3,
+      mainAxisSpacing: 2,
+      childAspectRatio: 0.6,
     ),
+    scrollDirection: Axis.vertical,
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     itemCount: sharedPosts.length,
@@ -455,78 +428,127 @@ Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
 
       return InkWell(
         onTap: () {
-          // Handle item click
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) {
+                return HomeInfo(
+                  breedCategoryModel: post,
+                );
+              },
+            ),
+          );
         },
         child: Card(
-          elevation: 2.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                post.imagePaths.toString(),
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  post.title.toString(),
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+          elevation: 3.0,
+          shadowColor: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 90,
+                    child: Image.network(
+                      "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
+                      // ^ Use the first image path
+                      height: 50,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Category: ${post.categoryTitle}',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    post.categoryTitle.toString(),
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Price: \$${post.price}',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    post.categoryTitle.toString(),
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    '\$${post.price}',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
     },
   );
 }
+
 Widget _buildPetsGridShimmer() {
   return Shimmer.fromColors(
     baseColor: Colors.grey[300]!,
     highlightColor: Colors.grey[100]!,
     child: GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // Number of columns
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
-      ),
+      itemCount: 9,
+      // Adjust the count as needed
+      scrollDirection: Axis.vertical,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5, // Adjust the count as needed
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 2,
+        childAspectRatio: 0.6,
+      ),
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          elevation: 0.3,
+          shadowColor: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 50,
-                width: 50,
+                height: 90,
                 decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 2),
               Container(
                 height: 10,
-                width: 50,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 5),
+              Container(
+                height: 10,
+                color: Colors.white,
+              ),
+              Container(
+                height: 20,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                height: 10,
                 color: Colors.white,
               ),
             ],
@@ -536,4 +558,3 @@ Widget _buildPetsGridShimmer() {
     ),
   );
 }
-

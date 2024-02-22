@@ -62,8 +62,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   child: ListTile(
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        favoritePet.imagePaths.toString(),
+                      child: Image.network(
+                        "https://wowpetspalace.com/dashboard/${favoritePet.imagePaths![index]}",
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
@@ -83,6 +83,18 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
                       },
                     ),
+                    // trailing: IconButton(
+                    //   icon: const Icon(Icons.delete, color: Colors.green),
+                    //   onPressed: ()  {
+                    //     if (favoritePet.id != null) {
+                    //       DataBaseHelper.instance.removePet(favoritePet.id!); // Change here
+                    //       setState(() {
+                    //         favoritePets = DataBaseHelper.instance.getFavoritePets();
+                    //       });
+                    //     }
+                    //   },
+                    // ),
+
                   ),
                 );
               },

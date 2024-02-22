@@ -1,10 +1,13 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pets_4_home/models/shared_post_model.dart';
 import '../../../services/database_helper.dart';
 
 class HomeInfo extends StatefulWidget {
-  const HomeInfo({Key? key, required this.breedCategoryModel}) : super(key: key);
+  const HomeInfo({Key? key, required this.breedCategoryModel})
+      : super(key: key);
   final SharedPostModel? breedCategoryModel;
 
   @override
@@ -19,7 +22,6 @@ class _HomeInfoState extends State<HomeInfo> {
     super.initState();
     if (widget.breedCategoryModel != null) {
       checkIfFavorite();
-
     }
   }
 
@@ -33,27 +35,16 @@ class _HomeInfoState extends State<HomeInfo> {
       });
     } else {
       // Handle the case where postId is null, if needed
-      print('Post ID is null');
-    }
-  }
-
-  void toggleFavorite() async {
-    if (mounted) {
-      if (isFavorite) {
-        setState(() {
-          removeFromFavorites();
-        });
-      } else {
-        addToFavorites();
+      if (kDebugMode) {
+        print('Post ID is null');
       }
-      setState(() {
-        isFavorite = !isFavorite;
-      });
     }
   }
 
-
-  void addToFavorites() async {
+  Future<void> addToFavorites(int postId) async {
+    if (kDebugMode) {
+      print("Breed Category Model: ${widget.breedCategoryModel}");
+    }
     SharedPostModel favorite = SharedPostModel(
       id: widget.breedCategoryModel!.id,
       imagePaths: widget.breedCategoryModel!.imagePaths,
@@ -62,6 +53,10 @@ class _HomeInfoState extends State<HomeInfo> {
       categoryTitle: widget.breedCategoryModel!.categoryTitle,
       price: widget.breedCategoryModel!.price,
     );
+
+    if (kDebugMode) {
+      print("Adding to favorites: $favorite");
+    } // Debugging statement
 
     int result = await DataBaseHelper.instance.addPets(favorite);
     if (result > 0) {
@@ -77,12 +72,25 @@ class _HomeInfoState extends State<HomeInfo> {
     }
   }
 
-  void removeFromFavorites() async {
-    int? categoryId = widget.breedCategoryModel!.categoryid;
+  void toggleFavorite() async {
+    if (widget.breedCategoryModel != null) {
+      int postId = widget.breedCategoryModel!.id!;
 
-    if (categoryId != null) {
-      int result = await DataBaseHelper.instance.removePet(categoryId);
+      if (isFavorite) {
+        await removeFromFavorites(postId);
+      } else {
+        await addToFavorites(postId);
+      }
 
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+    }
+  }
+
+  Future<void> removeFromFavorites(int postId) async {
+    try {
+      int result = await DataBaseHelper.instance.removePet(postId);
       if (result > 0) {
         Fluttertoast.showToast(
           msg: 'Removed from favorites',
@@ -94,14 +102,12 @@ class _HomeInfoState extends State<HomeInfo> {
           backgroundColor: Colors.red.shade700,
         );
       }
-    } else {
-      // Handle the case where categoryId is null, if needed
-      print('Category ID is null');
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error removing from favorites: $e");
+      }
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +117,24 @@ class _HomeInfoState extends State<HomeInfo> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image(
-                image: AssetImage(widget.breedCategoryModel!.imagePaths.toString()),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 300,
+              CarouselSlider.builder(
+                itemCount: widget.breedCategoryModel!.imagePaths!.length,
+                itemBuilder: (BuildContext context, int index, int realIndex) {
+                  return Image.network(
+                    "https://wowpetspalace.com/dashboard/${widget.breedCategoryModel!.imagePaths![index]}",
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.fill,
+                  );
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  aspectRatio: 2.0,
+                  enlargeCenterPage: true,
+                  onPageChanged: (index, reason) {
+                    // Handle page change if needed
+                  },
+                ),
               ),
               const SizedBox(
                 height: 10,
@@ -127,7 +146,7 @@ class _HomeInfoState extends State<HomeInfo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.breedCategoryModel!.title.toString(),
+                      widget.breedCategoryModel!.categoryTitle.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -139,7 +158,7 @@ class _HomeInfoState extends State<HomeInfo> {
                           onTap: () {},
                           child: const Icon(Icons.location_on),
                         ),
-                        const Text('London'),
+                        Text(widget.breedCategoryModel!.city.toString()),
                         Text(
                           '(show map)',
                           style: TextStyle(color: Colors.green.shade700),
@@ -148,14 +167,14 @@ class _HomeInfoState extends State<HomeInfo> {
                           onTap: () {},
                           child: const Icon(Icons.lock_clock),
                         ),
-                        const Text('2 minutes'),
+                        Text(widget.breedCategoryModel!.date.toString()),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          widget.breedCategoryModel!.price.toString(),
+                          '\$${widget.breedCategoryModel!.price.toString()}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 19,
@@ -297,18 +316,18 @@ class _HomeInfoState extends State<HomeInfo> {
                     const SizedBox(
                       height: 5,
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.favorite_border_outlined,
                           color: Colors.blue,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         Text(
-                          'Health protection',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          widget.breedCategoryModel!.healthchecked.toString(),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -333,18 +352,18 @@ class _HomeInfoState extends State<HomeInfo> {
                     const SizedBox(
                       height: 5,
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.verified_outlined,
                           color: Colors.blue,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         Text(
-                          'ID verified breeders',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          widget.breedCategoryModel!.verified.toString(),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -367,16 +386,20 @@ class _HomeInfoState extends State<HomeInfo> {
                         fontSize: 17,
                       ),
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(child: Text('Adv.ID')),
-                        Expanded(child: Text('HF0T7jnGk')),
+                        const Expanded(child: Text('Adv.ID')),
+                        Expanded(
+                            child:
+                                Text(widget.breedCategoryModel!.id.toString())),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(child: Text('Views')),
-                        Expanded(child: Text('753')),
+                        const Expanded(child: Text('Views')),
+                        Expanded(
+                            child: Text(
+                                widget.breedCategoryModel!.views.toString())),
                       ],
                     ),
                     const Row(
@@ -390,16 +413,19 @@ class _HomeInfoState extends State<HomeInfo> {
                         const Expanded(child: Text('Adv.Location')),
                         Expanded(
                           child: Text(
-                            'Winchmore Hill, London',
+                            widget.breedCategoryModel!.address.toString(),
                             style: TextStyle(color: Colors.green.shade800),
                           ),
                         ),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(child: Text('Advert Type')),
-                        Expanded(child: Text('For sale')),
+                        const Expanded(child: Text('Advert Type')),
+                        Expanded(
+                            child: Text(widget
+                                .breedCategoryModel!.advertisementType
+                                .toString())),
                       ],
                     ),
                     Row(
@@ -407,16 +433,19 @@ class _HomeInfoState extends State<HomeInfo> {
                         const Expanded(child: Text('Breed')),
                         Expanded(
                           child: Text(
-                            'British shorthair',
+                            widget.breedCategoryModel!.title.toString(),
                             style: TextStyle(color: Colors.green.shade800),
                           ),
                         ),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(child: Text('Health checked')),
-                        Expanded(child: Text('yes')),
+                        const Expanded(child: Text('Health checked')),
+                        Expanded(
+                            child: Text(
+                              (widget.breedCategoryModel!.healthchecked == 1) ? 'Yes' : 'No',
+                            ),)
                       ],
                     ),
                     const Row(
@@ -438,15 +467,13 @@ class _HomeInfoState extends State<HomeInfo> {
                     ),
                     const Text(
                       'Description',
-                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    const Text(
-                      'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!'
-                          'This is the description of for Pets which has been selected by user, Every user will find the overall detail of pets here!',
-                    ),
+                    Text(widget.breedCategoryModel!.description.toString()),
                   ],
                 ),
               ),
