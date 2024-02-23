@@ -106,7 +106,8 @@ class _BreedScreenState extends State<BreedScreen> {
               selectedPet = petsApi.first;
             }
 
-            return Expanded(
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                   for (PetsApiCategory pet in petsApi)
@@ -325,7 +326,8 @@ class _BreedScreenState extends State<BreedScreen> {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: ListView.builder(
-        itemCount: 3,
+        scrollDirection: Axis.horizontal,
+        itemCount: 5,
         itemBuilder: (BuildContext context, int index) {
           return Row(
             children: [

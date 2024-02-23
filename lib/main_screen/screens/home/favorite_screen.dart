@@ -17,7 +17,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   void initState() {
     super.initState();
     favoritePets = DataBaseHelper.instance.getFavoritePets();
-
   }
 
   @override
@@ -27,7 +26,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         title: const Text('Favorite Pets'),
       ),
       body: FutureBuilder<List<SharedPostModel>>(
-        future: favoritePets,
+        future: DataBaseHelper.instance.getFavoritePets(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -37,7 +36,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          } else if (!snapshot.hasData && snapshot.data!.isEmpty) {
             return const Center(
               child: Text('No favorite pets.'),
             );
@@ -69,31 +68,20 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    title: Text(favoritePet.title.toString()),
-                    subtitle: Text(favoritePet.price.toString()),
+                    title: Text(favoritePet.categoryTitle.toString()),
+                    subtitle: Text('\$${favoritePet.price.toString()}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.green),
                       onPressed: ()  {
                         if (favoritePet.id != null) {
-                          DataBaseHelper.instance.removePet(favoritePet.categoryid!);
+                          DataBaseHelper.instance.removePet(favoritePet.id!);
                           setState(() {
                             favoritePets = DataBaseHelper.instance.getFavoritePets();
                           });
                         }
-
                       },
+
                     ),
-                    // trailing: IconButton(
-                    //   icon: const Icon(Icons.delete, color: Colors.green),
-                    //   onPressed: ()  {
-                    //     if (favoritePet.id != null) {
-                    //       DataBaseHelper.instance.removePet(favoritePet.id!); // Change here
-                    //       setState(() {
-                    //         favoritePets = DataBaseHelper.instance.getFavoritePets();
-                    //       });
-                    //     }
-                    //   },
-                    // ),
 
                   ),
                 );

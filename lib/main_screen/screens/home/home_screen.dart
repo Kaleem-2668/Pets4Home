@@ -1,3 +1,4 @@
+
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/appBar/setting/profile_screen.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../models/shared_post_model.dart';
 import '../../../provider/language_provider.dart';
+import '../../../services/database_helper.dart';
 import '../auth/login_screen.dart';
 import '../drawer/article_info_screen.dart';
 import '../drawer/breed_screen.dart';
@@ -33,20 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _locationController = TextEditingController();
   bool enable = true;
   bool _mounted = true;
-  final GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey();
   late Future<List<SharedPostModel>> _futureSharedPosts;
 
+  @override
   @override
   void initState() {
     super.initState();
     _futureSharedPosts = articleViewModel.fetchSharedPostsApi();
+    loadData();
   }
 
-  Future<void> _refreshData() async {
-    setState(() async {
-      _futureSharedPosts = articleViewModel.fetchSharedPostsApi();
-    });
-  }
 
   @override
   void dispose() {
@@ -65,12 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // DataBaseHelper dbHelper = DataBaseHelper.instance;
+    print("Building HomeScreen");
+    DataBaseHelper dbHelper = DataBaseHelper.instance;
     return BackdropScaffold(
       backLayerBackgroundColor: Colors.green.shade100,
       appBar: BackdropAppBar(
         title: Text(AppLocalizations.of(context)!.helloWorld),
-        // backgroundColor: Colors.green.shade800,
         leadingWidth: 60,
         actions: <Widget>[
           Consumer<ChangeLanguage>(builder: (context, provider, child) {
@@ -142,11 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             InkWell(
-                onTap: () {
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  //   return const ArticleScreen();
-                  // }));
-                },
+                onTap: () {},
                 child: const Center(
                     child: Text(
                   'HOME',
@@ -170,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
             InkWell(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                    return const FavoriteScreen();
+                    return FavoriteScreen();
                   }));
                 },
                 child: const Center(
@@ -334,9 +328,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     SizedBox(
                       height: 90,
-                      child:
-                          // enable ? _buildPetsCategoryShimmer() :
-                          _buildPetsCategoryList(),
+                      child: enable
+                          ? _buildPetsCategoryShimmer()
+                          : _buildPetsCategoryList(),
                     ),
                     const Padding(
                       padding: EdgeInsets.all(8.0),
@@ -348,25 +342,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    RefreshIndicator(
-                      key: _refreshKey,
-                      onRefresh: _refreshData,
-                      child: FutureBuilder<List<SharedPostModel>>(
-                        future: _futureSharedPosts,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return _buildPetsGridShimmer(); // Add shimmer while loading
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (snapshot.hasData) {
-                            return _buildPetsGrid(
-                                snapshot.data!); // Pass the data to the grid
-                          } else {
-                            return const Text('No data available');
-                          }
-                        },
-                      ),
+                    FutureBuilder<List<SharedPostModel>>(
+                      future: _futureSharedPosts,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return _buildPetsGridShimmer();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
+                          return _buildPetsGrid(snapshot.data!);
+                        } else {
+                          return const Text('No data available');
+                        }
+                      },
                     )
                   ],
                 ),
@@ -410,6 +398,40 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+}
+
+Widget _buildPetsCategoryShimmer() {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: ListView.builder(
+      itemCount: 5, // Adjust the count as needed
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Container(
+                height: 50,
+                width: 50,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 10,
+                width: 50,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  );
 }
 
 Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
@@ -459,7 +481,6 @@ Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
                     height: 90,
                     child: Image.network(
                       "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
-                      // ^ Use the first image path
                       height: 50,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -503,7 +524,6 @@ Widget _buildPetsGridShimmer() {
     highlightColor: Colors.grey[100]!,
     child: GridView.builder(
       itemCount: 9,
-      // Adjust the count as needed
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

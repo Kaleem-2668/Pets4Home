@@ -123,14 +123,15 @@ class DataBaseHelper {
 
   void createDb(Database db, int newVersion) async {
     await db.execute('''CREATE TABLE $tableName (
-      id INTEGER PRIMARY KEY,
-      imagePaths TEXT,
-      title TEXT,
-      description TEXT,
-      categoryTitle TEXT,
-      price TEXT
-    )''');
+    id INTEGER PRIMARY KEY,
+    imagePaths BLOB,
+    title TEXT,
+    description TEXT,
+    categoryTitle TEXT,
+    price TEXT
+  )''');
   }
+
 
   Future<int> addPets(SharedPostModel favorite) async {
     try {
@@ -155,10 +156,6 @@ class DataBaseHelper {
     }
   }
 
-
-
-
-
   Future<int> removePet(int id) async {
     try {
       Database db = await instance.database;
@@ -180,7 +177,6 @@ class DataBaseHelper {
       return false;
     }
   }
-
   Future<List<SharedPostModel>> getFavoritePets() async {
     try {
       Database db = await instance.database;
@@ -189,7 +185,7 @@ class DataBaseHelper {
       List<SharedPostModel> favorites = result.map((map) {
         return SharedPostModel(
           id: map['id'],
-          imagePaths: map['imagePaths'],
+          imagePaths: map['imagePaths'].toString().split(","),
           title: map['title'],
           description: map['description'],
           categoryTitle: map['categoryTitle'],
@@ -203,5 +199,6 @@ class DataBaseHelper {
       return [];
     }
   }
+
 }
 
