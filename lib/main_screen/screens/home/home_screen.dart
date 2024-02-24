@@ -36,20 +36,43 @@ class _HomeScreenState extends State<HomeScreen> {
   bool enable = true;
   bool _mounted = true;
   late Future<List<SharedPostModel>> _futureSharedPosts;
+  int _currentPage = 1;
+  bool _isLoading = false;
+  ScrollController _scrollController = ScrollController();
 
-  @override
   @override
   void initState() {
     super.initState();
-    _futureSharedPosts = articleViewModel.fetchSharedPostsApi();
-    loadData();
+    _futureSharedPosts = articleViewModel.fetchPaginatedSharedPostsData(_currentPage);
+    // Add a listener to the scroll controller
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        // User has scrolled to the bottom, load more data
+        if (!_isLoading) {
+          _loadMoreData();
+        }
+      }
+    });
   }
-
-
   @override
   void dispose() {
+    _scrollController.dispose();
     _mounted = false;
     super.dispose();
+  }
+  Future<void> _loadMoreData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Fetch the next page of data
+    _currentPage++;
+    List<SharedPostModel> nextPage = await articleViewModel.fetchPaginatedSharedPostsData(_currentPage);
+
+    setState(() {
+      _futureSharedPosts = _futureSharedPosts.then((existingPosts) => existingPosts + nextPage);
+      _isLoading = false;
+    });
   }
 
   Future<void> loadData() async {
@@ -490,7 +513,7 @@ Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    post.categoryTitle.toString(),
+                    post.title.toString(),
                     style: const TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -500,7 +523,7 @@ Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    post.categoryTitle.toString(),
+                    post.description.toString(),
                   ),
                 ),
                 Padding(
@@ -517,6 +540,7 @@ Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
     },
   );
 }
+
 
 Widget _buildPetsGridShimmer() {
   return Shimmer.fromColors(

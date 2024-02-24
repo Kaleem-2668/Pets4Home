@@ -62,7 +62,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: Image.network(
-                        "https://wowpetspalace.com/dashboard/${favoritePet.imagePaths![index]}",
+                        "https://wowpetspalace.com/dashboard/${favoritePet.imagePaths![0]}",
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,

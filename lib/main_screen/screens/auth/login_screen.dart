@@ -27,8 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter an email address';
     }
-
-    // Use a regular expression to validate the email format
     RegExp emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
     if (!emailRegex.hasMatch(value)) {
       return 'Please enter a valid email address';
@@ -47,6 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return null;
   }
+
+
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
               InkWell(
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                    return SignUp();
+                    return const SignUp();
                   }));
                 },
                 child: const Text(
@@ -143,62 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   buttonColor: Colors.green),
               const SizedBox(height: 20,),
-
-
-              // Expanded(
-              //   flex: 1,
-              //   child: Container(
-              //     // margin: const EdgeInsets.only(top: 15),
-              //     alignment: Alignment.bottomCenter,
-              //     decoration: const BoxDecoration(
-              //       color: Colors.black12,
-              //     ),
-              //     child: Center(
-              //       child: Align(
-              //         alignment: Alignment.topCenter,
-              //         child: Padding(
-              //             padding: const EdgeInsets.symmetric(
-              //                 horizontal: 5, vertical: 20),
-              //             child: Column(
-              //               crossAxisAlignment: CrossAxisAlignment.center,
-              //               children: [
-              //                 const Text(
-              //                   'This site is protected by reCAPTCHA.Google\'s',
-              //                   style: TextStyle(color: Colors.black),
-              //                 ),
-              //                 RichText(
-              //                   text: const TextSpan(
-              //                     text: 'Privacy policy',
-              //                     style: TextStyle(
-              //                       color: Colors.green,
-              //                       decoration: TextDecoration.underline,
-              //                     ),
-              //                     children: [
-              //                       TextSpan(
-              //                         text: 'and',
-              //                         style: TextStyle(color: Colors.black),
-              //                       ),
-              //                       TextSpan(
-              //                         text: ' Terms of Service',
-              //                         style: TextStyle(
-              //                           color: Colors.green,
-              //                           decoration: TextDecoration.underline,
-              //                         ),
-              //                       ),
-              //                       TextSpan(
-              //                         text: ' apply',
-              //                         style: TextStyle(color: Colors.black),
-              //                       ),
-              //                     ],
-              //                   ),
-              //                 ),
-              //               ],
-              //             )
-              //             ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),

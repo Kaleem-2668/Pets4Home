@@ -25,16 +25,19 @@ class ArticleViewModel {
     final response = await repo.getCategoryWiseApi(categoryId);
     return response;
   }
+
   Future<List<BreedCategoryModel>> fetchBreedCategoryData() async {
     final response = await repo.getBreedCategoryApi();
     return response;
   }
+
   Future<List<PetsApiCategory>> fetchPetsApiCategory() async {
     final response = await repo.getPetApiCategoryApi();
     return response;
   }
-  Future<List<SharedPostModel>> fetchSharedPostsApi() async {
-    final response = await repo.getSharedPostApi();
+
+  Future<List<SharedPostModel>> fetchPaginatedSharedPostsData(int page) async {
+    final response = await repo.getPaginatedSharedPostsApi(page);
     return response;
   }
 }

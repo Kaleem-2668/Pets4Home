@@ -49,7 +49,7 @@ class NetworkApiService extends BaseApiServices{
         throw InvalidInputException(response.body);
 
       default:
-        throw FetchDataException('Error occurred while communication with server'+'with status code '+response.statusCode.toString());
+        throw FetchDataException(response.statusCode.toString());
     }
   }
 

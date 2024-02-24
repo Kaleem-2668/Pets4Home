@@ -113,37 +113,31 @@ class AppRepository {
     }
     throw Exception('error');
   }
+  Future<List<SharedPostModel>> getPaginatedSharedPostsApi(int page) async {
+    String url = '$baseUrl/advertisment/getadvertisement/$page';
+    final response = await http.get(Uri.parse(url));
 
-  bool _isSharedPostApiCalled = false;
-  Future<List<SharedPostModel>> getSharedPostApi() async {
-    if (_isSharedPostApiCalled) {
-      // If the method has already been called, return an empty list
-      return [];
-    }
+    if (response.statusCode == 200) {
+      final List<dynamic> body = jsonDecode(response.body);
 
-    _isSharedPostApiCalled = true;
-
-    String url = '$baseUrl/advertisment/getadvertisement';
-    print('Calling getSharedPostApi...');
-
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        print('getSharedPostApi success');
-        final List<dynamic> body = jsonDecode(response.body);
-        List<SharedPostModel> posts = body.map((json) => SharedPostModel.fromJson(json)).toList();
-        return posts;
-      } else {
-        print('getSharedPostApi failed - Status Code: ${response.statusCode}');
-        print('getSharedPostApi failed - Response Body: ${response.body}');
+      if (kDebugMode) {
+        print('****************************paginated shared post api response*************************************');
+        print('Response Body: ${response.body}');  // Add this line to print the response body
       }
-    } catch (error) {
-      print('getSharedPostApi failed - Exception: $error');
+
+      List<SharedPostModel> sharedPosts = body.map((json) => SharedPostModel.fromJson(json)).toList();
+      return sharedPosts;
     }
 
-    throw Exception('Failed to load data');
+    if (kDebugMode) {
+      print('Error in getPaginatedSharedPostsApi: ${response.statusCode}');
+      print('Error response body: ${response.body}');  // Add this line to print the error response body
+    }
+
+    throw Exception('Error in getPaginatedSharedPostsApi: ${response.statusCode}');
   }
+
+
 
 
 
