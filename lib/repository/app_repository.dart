@@ -10,13 +10,27 @@ import '../models/breed_category_model.dart';
 
 class AppRepository {
   String baseUrl = 'https://wowpetspalace.com/dashboard';
-  Future<List<ArticleModel>> getArticlesApi() async {
-    String url = '$baseUrl/article/getarticles';
+
+
+  Future<List<ArticleModel>> getArticleApi(int currentPage) async {
+    String url = '$baseUrl/article/getarticles/$currentPage';
     final response = await http.get(Uri.parse(url));
+
+    if (kDebugMode) {
+      print('Requesting article API: $url');
+    }
+
+    if (kDebugMode) {
+      print('Response Status Code: ${response.statusCode}');
+    }
+    if (kDebugMode) {
+      print('Response Body: ${response.body}');
+    }
+
     if (response.statusCode == 200) {
       final List<dynamic> body = jsonDecode(response.body);
       if (kDebugMode) {
-        print('**************************article api response ***************************************');
+        print('****************************article api response*************************************');
       }
       if (kDebugMode) {
         print(body.toString());
@@ -24,7 +38,8 @@ class AppRepository {
       List<ArticleModel> articles = body.map((json) => ArticleModel.fromJson(json)).toList();
       return articles;
     }
-    throw Exception('error');
+
+    throw Exception('Error in getArticleApi: ${response.statusCode}');
   }
   Future<List<CategoryModel>> getCategoryApi() async {
       String url = '$baseUrl/categoryarticle/showcategoryarticle';
@@ -52,25 +67,16 @@ class AppRepository {
   Future<CategoryWiseModel> getCategoryWiseApi(int categoryId) async {
     String url = '$baseUrl/article/getcategorybyid/$categoryId';
     final response = await http.get(Uri.parse(url));
-    if (kDebugMode) {
-      print('Response Status Code: ${response.statusCode}');
-    }
-    if (kDebugMode) {
-      print('Response Body: ${response.body}');
-    }
+
 
     if (response.statusCode == 200) {
       final dynamic jsonResponse = jsonDecode(response.body);
       if (kDebugMode) {
         print('****************************categoryWise api response*************************************');
       }
-      if (kDebugMode) {
-        print(jsonResponse.toString());
-      }
+
       return CategoryWiseModel.fromJson(jsonResponse);
       } else {
-        // Handle the case where the success flag is false
-        //print('Error in API response: ${jsonResponse['message']}');
         throw Exception('Error in API response');
       }
     }
@@ -113,33 +119,6 @@ class AppRepository {
     }
     throw Exception('error');
   }
-  Future<List<SharedPostModel>> getPaginatedSharedPostsApi(int page) async {
-    String url = '$baseUrl/advertisment/getadvertisement/$page';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> body = jsonDecode(response.body);
-
-      if (kDebugMode) {
-        print('****************************paginated shared post api response*************************************');
-        print('Response Body: ${response.body}');  // Add this line to print the response body
-      }
-
-      List<SharedPostModel> sharedPosts = body.map((json) => SharedPostModel.fromJson(json)).toList();
-      return sharedPosts;
-    }
-
-    if (kDebugMode) {
-      print('Error in getPaginatedSharedPostsApi: ${response.statusCode}');
-      print('Error response body: ${response.body}');  // Add this line to print the error response body
-    }
-
-    throw Exception('Error in getPaginatedSharedPostsApi: ${response.statusCode}');
-  }
-
-
-
-
 
 
 

@@ -74,8 +74,8 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   DateTime? lastpress;
   final pages=[
     HomeScreen(),
-    const ArticleScreen(),
-     FavoriteScreen(),
+    ArticleScreen(),
+     const FavoriteScreen(),
     const UserScreen(),
   ];
   final items=[

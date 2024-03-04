@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:pets_4_home/models/category_model.dart';
-
 import '../../../models/article_model.dart';
 import '../../../view_model/articles/article_view_model.dart';
 
 class ArticleInfo extends StatefulWidget {
-  ArticleInfo({Key? key, required this.articleModelList,}) : super(key: key);
-  ArticleModel? articleModelList;
+  final ArticleModel? articleModelList;
+  final int? selectedIndex;
+
+  const ArticleInfo({Key? key, required this.articleModelList,  this.selectedIndex,}) : super(key: key);
+
   @override
   _ArticleInfoState createState() => _ArticleInfoState();
 }
@@ -31,7 +32,7 @@ class _ArticleInfoState extends State<ArticleInfo> {
                   width: double.infinity, // Set width to cover full width
                   height: height * .42,
                   child: CachedNetworkImage(
-                    imageUrl: "https://wowpetspalace.com/dashboard/${widget.articleModelList!.image}",
+                    imageUrl: "https://wowpetspalace.com/dashboard/${widget.articleModelList!.articles![0].image.toString()}",
                     placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
                     fit: BoxFit.cover,
@@ -47,7 +48,7 @@ class _ArticleInfoState extends State<ArticleInfo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.articleModelList!.title.toString(),
+                      widget.articleModelList!.articles![0].title.toString(),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20),
                     ),
@@ -60,7 +61,7 @@ class _ArticleInfoState extends State<ArticleInfo> {
                       child:  Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child:Text(
-                          widget.articleModelList!.categoryName.toString(),
+                          widget.articleModelList!.articles![0].categoryName.toString(),
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
@@ -76,7 +77,7 @@ class _ArticleInfoState extends State<ArticleInfo> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 13.0),
                 child: Text(
-                  widget.articleModelList!.description.toString(),
+                  widget.articleModelList!.articles![0].description.toString(),
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

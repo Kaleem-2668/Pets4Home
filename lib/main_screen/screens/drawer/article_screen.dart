@@ -1,265 +1,5 @@
-//
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:carousel_slider/carousel_slider.dart';
-// import 'package:flutter/material.dart';
-// import 'package:pets_4_home/models/category_wise_model.dart';
-// import 'package:pets_4_home/view_model/article_view_model.dart';
-// import 'package:shimmer/shimmer.dart';
-// import '../../../models/article_model.dart';
-//
-// import '../../../models/category_model.dart';
-// import '../user/user_screen.dart';
-// import 'article_info_screen.dart';
-//
-// class ArticleScreen extends StatefulWidget {
-//   const ArticleScreen({Key? key}) : super(key: key);
-//
-//   @override
-//   _ArticleScreenState createState() => _ArticleScreenState();
-// }
-//
-// class _ArticleScreenState extends State<ArticleScreen> {
-//   final articleViewModel = ArticleViewModel();
-//   String baseUrl = 'https://wowpetspalace.com/dashboard';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: SafeArea(
-//           child: TextFormField(
-//             onChanged: (query) {
-//               //filterArticles(query);
-//             },
-//             style: const TextStyle(color: Colors.white, fontSize: 18.0),
-//             decoration: InputDecoration(
-//               contentPadding: const EdgeInsets.symmetric(
-//                 vertical: 15,
-//                 horizontal: 15,
-//               ),
-//               hintText: 'Search for your Article',
-//               hintStyle: const TextStyle(
-//                   color: Colors.white, fontWeight: FontWeight.bold),
-//               suffixIcon: const Icon(Icons.search, color: Colors.white,),
-//               border: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(10.0),
-//                 borderSide: const BorderSide(color: Colors.white),
-//               ),
-//               focusedBorder: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(10.0),
-//                 borderSide: const BorderSide(
-//                     color: Colors.white), // Set focused border color
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Column(
-//             children: [
-//               const SizedBox(height: 20),
-//               Stack(
-//                 children: [
-//                   CarouselSlider(
-//                     options: CarouselOptions(
-//                       enableInfiniteScroll: true,
-//                       autoPlay: true,
-//                       autoPlayInterval: const Duration(seconds: 4),
-//                       autoPlayAnimationDuration:
-//                       const Duration(milliseconds: 800),
-//                       autoPlayCurve: Curves.fastOutSlowIn,
-//                       enlargeCenterPage: true,
-//                     ),
-//                     items: [
-//                       'images/slider_images/dogArt.jpg',
-//                       'images/slider_images/slide_a.jpg',
-//                       'images/slider_images/slideb.jpg',
-//                     ].map((String item) {
-//                       return Builder(
-//                         builder: (BuildContext context) {
-//                           return ClipRRect(
-//                             borderRadius:
-//                             const BorderRadius.all(Radius.circular(20)),
-//                             child: Image.asset(
-//                               item,
-//                               fit: BoxFit.cover,
-//                               width: double.infinity,
-//                             ),
-//                           );
-//                         },
-//                       );
-//                     }).toList(),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 20,),
-//               FutureBuilder<List<CategoryModel>>(
-//                   future: articleViewModel.fetchCategoryData(),
-//                   builder: (BuildContext context, snapshot){
-//                     if(snapshot.connectionState == ConnectionState.waiting){
-//                       return  Center(child: Container());
-//                     }else if(snapshot.hasError){
-//                       return const Text('error');
-//
-//                     }else {
-//                       return Padding(
-//                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                         child: Row(
-//                           //mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                           children: snapshot.data!.map((categoryData) {
-//                             return Padding(
-//                               padding: const EdgeInsets.only(right: 5.0),
-//                               child: GestureDetector(
-//                                 child: InkWell(
-//                                   onTap: (){
-//
-//                                   },
-//                                   child: Container(
-//                                     decoration: BoxDecoration(
-//                                       borderRadius: BorderRadius.circular(15),
-//                                       color: Colors.green.shade700,
-//                                     ),
-//                                     child: Padding(
-//                                       padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 2),
-//                                       child: Text(categoryData.categoryName.toString(),
-//                                         style: const TextStyle(fontSize:17,fontWeight: FontWeight.bold,color: Colors.white),),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-//                             );
-//                           }).toList(),
-//                         ),
-//                       );
-//
-//                     }
-//
-//                   }),
-//                const SizedBox(height: 10),
-//               FutureBuilder<List<ArticleModel>>(
-//                 future: articleViewModel.fetchArticleData(),
-//                 builder: (BuildContext context, snapshot) {
-//                   if (snapshot.connectionState == ConnectionState.waiting) {
-//                     return Shimmer.fromColors(
-//                       baseColor: Colors.grey.shade300,
-//                       highlightColor: Colors.grey.shade200,
-//                       child: _buildShimmerCard(),
-//                     );
-//                   } else if (snapshot.hasError) {
-//                     return const Text('something went wrong');
-//                   } else {
-//                     return ListView.builder(
-//                       shrinkWrap: true,
-//                       physics: const NeverScrollableScrollPhysics(),
-//                       itemCount: snapshot.data!.length,
-//                       itemBuilder: (context, index) {
-//                         final articleData = snapshot.data![index];
-//                         return InkWell(
-//                           onTap: () {
-//                             Navigator.push(
-//                               context,
-//                               MaterialPageRoute(builder: (ctx) {
-//                                 return ArticleInfo(
-//                                   articleModelList: articleData,
-//                                 );
-//                               }),
-//                             );
-//                           },
-//                           child: Card(
-//                             elevation: 0.5,
-//                             shadowColor: Colors.grey.shade200,
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(10),
-//                             ),
-//                             child: Padding(
-//                               padding: const EdgeInsets.all(8.0),
-//                               child: ListTile(
-//                                 contentPadding: EdgeInsets.zero,
-//                                 leading: SizedBox(
-//                                   height: 80,
-//                                   width: 80,
-//                                   child: ClipRRect(
-//                                     borderRadius: BorderRadius.circular(14),
-//                                     child:  CachedNetworkImage(
-//                                       imageUrl: "https://wowpetspalace.com/dashboard/${articleData.image}",
-//                                       placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-//                                       errorWidget: (context, url, error) => const Icon(Icons.error),
-//                                       fit: BoxFit.fill,
-//                                     ),
-//                                   ),
-//                                 ),
-//                                 title: Text(
-//                                   articleData.title!,
-//                                   style: const TextStyle(
-//                                     fontSize: 14,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 subtitle: Text(
-//                                   articleData.description!,
-//                                   maxLines: 2,
-//                                   style: const TextStyle(
-//                                     fontSize: 13,
-//                                     fontWeight: FontWeight.bold,
-//                                   ),
-//                                 ),
-//                                 // trailing: Padding(
-//                                 //   padding: const EdgeInsets.symmetric(
-//                                 //     horizontal: 10.0,
-//                                 //   ),
-//                                 //   child: Text(articleData.categoryName!),
-//                                 // ),
-//                               ),
-//                             ),
-//                           ),
-//                         );
-//                       },
-//                     );
-//                   }
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildShimmerCard() {
-//     return ListView.builder(
-//       shrinkWrap: true,
-//       physics: const NeverScrollableScrollPhysics(),
-//       itemCount: 3,
-//       itemBuilder: (context, index) {
-//         return Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: ListTile(
-//             contentPadding: EdgeInsets.zero,
-//             leading: ClipRRect(
-//               borderRadius: BorderRadius.circular(14),
-//               child: Container(
-//                 height: 80,
-//                 width: 80,
-//                 color: Colors.white,
-//               ),
-//             ),
-//             title: Container(
-//               height: 15,
-//               color: Colors.white,
-//             ),
-//             subtitle: Container(
-//               height: 13,
-//               color: Colors.white,
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
-//
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -270,6 +10,9 @@ import 'package:shimmer/shimmer.dart';
 import '../../../models/article_model.dart';
 
 import '../../../models/category_model.dart';
+
+import 'package:http/http.dart' as http;
+
 import 'article_info_screen.dart';
 
 class ArticleScreen extends StatefulWidget {
@@ -282,51 +25,97 @@ class ArticleScreen extends StatefulWidget {
 class _ArticleScreenState extends State<ArticleScreen> {
   final articleViewModel = ArticleViewModel();
   String baseUrl = 'https://wowpetspalace.com/dashboard';
-  List<ArticleModel> articles = [];
   List<CategoryModel> categories = [];
   List<Data> categoryWiseData = [];
   bool isCategorySelected = false;
   late Future<List<CategoryModel>> categoryDataFuture;
   int? selectedCategoryId;
   TextEditingController searchController = TextEditingController();
-
+  ArticleModel? articleModel;
+  int currentPage = 1;
+  bool isLoading = false;
+  bool reachedEnd = false; // Track if all pages have been loaded
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    fetchArticleData();
     categoryDataFuture = articleViewModel.fetchCategoryData();
+    fetchData();
+    _scrollController.addListener(_scrollListener);
   }
-  void filterArticles(String query) {
-    if (query.isNotEmpty) {
-      List<ArticleModel> filteredArticles = articles
-          .where((article) =>
-          article.title!.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      setState(() {
-        articles = filteredArticles;
-      });
-    } else {
-      fetchArticleData();
-    }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
-  void fetchArticleData() async {
+
+  Future<void> fetchData() async {
+    if (isLoading || reachedEnd) return;
+
+    final apiUrl =
+        'https://wowpetspalace.com/dashboard/article/getarticles/$currentPage';
+
     try {
-      List<ArticleModel> fetchedArticles =
-      await articleViewModel.fetchArticleData();
-      setState(() {
-        articles = fetchedArticles;
-      });
-    } catch (e) {
-      // Handle error
-      print('Error fetching articles: $e');
+      isLoading = true;
+      var response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+        ArticleModel newPage = ArticleModel.fromJson(jsonData);
+
+        if (newPage.articles!.isEmpty) {
+          // No more data to load
+          reachedEnd = true;
+        } else {
+          if (articleModel == null) {
+            articleModel = newPage;
+          } else {
+            articleModel!.articles!.addAll(newPage.articles!);
+            articleModel!.currentPage = newPage.currentPage;
+            articleModel!.totalPages = newPage.totalPages;
+          }
+
+          currentPage++;
+        }
+
+        isLoading = false;
+        setState(() {});
+      } else {
+        print('Error fetching data. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
     }
   }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      fetchData();
+    }
+  }
+
+  // void filterArticles(String query) {
+  //   if (query.isNotEmpty) {
+  //     List<ArticleModel> filteredArticles = articles
+  //         .where((article) =>
+  //         article.articles!.any((articleData) =>
+  //             articleData.title!.toLowerCase().contains(query.toLowerCase())))
+  //         .toList();
+  //
+  //     setState(() {
+  //       articles = filteredArticles;
+  //     });
+  //   } else {
+  //   }
+  // }
+
   void fetchCategoryData() async {
     try {
       List<CategoryModel> fetchedCategories =
-      await articleViewModel.fetchCategoryData();
-
+          await articleViewModel.fetchCategoryData();
     } catch (e) {
       print('Error fetching categories: $e');
     }
@@ -335,7 +124,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   void onCategorySelected(int categoryId) async {
     try {
       CategoryWiseModel fetchedCategoryWiseData =
-      await articleViewModel.fetchCategoryWiseData(categoryId);
+          await articleViewModel.fetchCategoryWiseData(categoryId);
       setState(() {
         categoryWiseData = fetchedCategoryWiseData.data ?? [];
         isCategorySelected = true;
@@ -362,74 +151,58 @@ class _ArticleScreenState extends State<ArticleScreen> {
       return buildArticleList();
     }
   }
+
   Widget buildArticleList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: articles.length,
-      itemBuilder: (context, index) {
-        final articleData = articles[index];
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (ctx) {
-                return ArticleInfo(
-                  articleModelList: articleData,
-                );
-              }),
-            );
-          },
-          child: Card(
-            elevation: 0.5,
-            shadowColor: Colors.grey.shade200,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: CachedNetworkImage(
-                      imageUrl:
-                      "https://wowpetspalace.com/dashboard/${articleData.image}",
-                      placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                      const Icon(Icons.error),
-                      fit: BoxFit.fill,
-                    ),
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: reachedEnd
+                ? articleModel?.articles?.length ?? 0
+                : (articleModel?.articles?.length ?? 0) + 1,
+            itemBuilder: (context, index) {
+              if (index == (articleModel?.articles?.length ?? 0)) {
+                if (!reachedEnd) {
+                  return const Center(child: CircularProgressIndicator());
+                } else {
+                  return const SizedBox
+                      .shrink(); // Placeholder for the last loading indicator
+                }
+              }
+
+              Articles article = articleModel!.articles![index];
+
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (ctx) {
+                      return ArticleInfo(
+                          articleModelList: articleModel, selectedIndex: index);
+                    }),
+                  );
+                },
+                child: ListTile(
+                  title: Text(article.title ?? ''),
+                  subtitle: Text(article.description ?? '', maxLines: 2),
+                  leading: Image.network(
+                    "https://wowpetspalace.com/dashboard/${article.image?.toString() ?? ''}",
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
                   ),
                 ),
-                title: Text(
-                  articleData.title!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  articleData.description!,
-                  maxLines: 2,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
+
   Widget buildCategoryWiseList() {
-     return ListView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: categoryWiseData.length,
@@ -452,11 +225,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   borderRadius: BorderRadius.circular(14),
                   child: CachedNetworkImage(
                     imageUrl:
-                    "https://wowpetspalace.com/dashboard/${categoryWise.image.toString()}",
+                        "https://wowpetspalace.com/dashboard/${categoryWise.image![0]}",
                     placeholder: (context, url) =>
-                    const Center(child: CircularProgressIndicator()),
+                        const Center(child: CircularProgressIndicator()),
                     errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
+                        const Icon(Icons.error),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -489,9 +262,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       appBar: AppBar(
         title: TextFormField(
           controller: searchController,
-          onChanged: (query) {
-            filterArticles(query);
-          },
           style: const TextStyle(color: Colors.white, fontSize: 18.0),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(
@@ -511,109 +281,106 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(
-                  color: Colors.white),
+              borderSide: const BorderSide(color: Colors.white),
             ),
           ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Stack(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      enableInfiniteScroll: true,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 4),
-                      autoPlayAnimationDuration:
-                      const Duration(milliseconds: 800),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enlargeCenterPage: true,
-                    ),
-                    items: [
-                      'images/slider_images/dogArt.jpg',
-                      'images/slider_images/slide_a.jpg',
-                      'images/slider_images/slideb.jpg',
-                    ].map((String item) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return ClipRRect(
-                            borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                            child: Image.asset(
-                              item,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Stack(
+              children: [
+                CarouselSlider(
+                  options: CarouselOptions(
+                    enableInfiniteScroll: true,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 4),
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: true,
                   ),
-                ],
-              ),
-              const SizedBox(height: 20,),
-              FutureBuilder<List<CategoryModel>>(
-                  future: categoryDataFuture,
-                builder: (BuildContext context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.grey.shade200,
-                        child: _buildShimmerCard(),
-                      );
-                  } else if (snapshot.hasError) {
-                    return const Text('error');
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: snapshot.data!.map((categoryData) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 5.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                // Handle category selection
-                                onCategorySelected(categoryData.categoryid ?? 0);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: selectedCategoryId == categoryData.categoryid
-                                      ? Colors.green.shade700// Set the selected category color
-                                      : Colors.green.shade300,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15.0, vertical: 2),
-                                  child: Text(
-                                    categoryData.categoryName.toString(),
-                                    style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
+                  items: [
+                    'images/slider_images/dogArt.jpg',
+                    'images/slider_images/slide_a.jpg',
+                    'images/slider_images/slideb.jpg',
+                  ].map((String item) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
+                          child: Image.asset(
+                            item,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            FutureBuilder<List<CategoryModel>>(
+              future: categoryDataFuture,
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey.shade300,
+                    highlightColor: Colors.grey.shade200,
+                    child: _buildShimmerCard(),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Text('error');
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: snapshot.data!.map((categoryData) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 5.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              onCategorySelected(categoryData.categoryid ?? 0);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: selectedCategoryId ==
+                                        categoryData.categoryid
+                                    ? Colors.green.shade700
+                                    : Colors.green.shade300,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0, vertical: 2),
+                                child: Text(
+                                  categoryData.categoryName.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
                                 ),
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 10),
-              // Display either articles or category-wise data based on the state
-              buildContent(),
-            ],
-          ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: buildContent(),
+            ),
+          ],
         ),
       ),
     );
@@ -651,4 +418,3 @@ class _ArticleScreenState extends State<ArticleScreen> {
     );
   }
 }
-

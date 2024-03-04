@@ -1,5 +1,7 @@
+import 'dart:convert';
 
 import 'package:backdrop/backdrop.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pets_4_home/main_screen/screens/appBar/setting/profile_screen.dart';
 import 'package:pets_4_home/main_screen/screens/drawer/article_screen.dart';
@@ -11,11 +13,10 @@ import '../../../models/shared_post_model.dart';
 import '../../../provider/language_provider.dart';
 import '../../../services/database_helper.dart';
 import '../auth/login_screen.dart';
-import '../drawer/article_info_screen.dart';
 import '../drawer/breed_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'home_info_screen.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -33,60 +34,100 @@ enum Language {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _locationController = TextEditingController();
-  bool enable = true;
-  bool _mounted = true;
-  late Future<List<SharedPostModel>> _futureSharedPosts;
+  bool enable = false;
+  bool isLoading = false;
+  bool reachedEnd = false;
+  final List<SharedPostModel> _posts = [];
   int _currentPage = 1;
-  bool _isLoading = false;
-  ScrollController _scrollController = ScrollController();
+  bool _hasMoreData = true;
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _futureSharedPosts = articleViewModel.fetchPaginatedSharedPostsData(_currentPage);
-    // Add a listener to the scroll controller
+    _fetchPosts();
+
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        // User has scrolled to the bottom, load more data
-        if (!_isLoading) {
-          _loadMoreData();
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (_hasMoreData) {
+          _fetchPosts();
+        } else {
+          // No more data to load
+          print('No more data');
         }
       }
     });
   }
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _mounted = false;
-    super.dispose();
-  }
-  Future<void> _loadMoreData() async {
-    setState(() {
-      _isLoading = true;
-    });
 
-    // Fetch the next page of data
-    _currentPage++;
-    List<SharedPostModel> nextPage = await articleViewModel.fetchPaginatedSharedPostsData(_currentPage);
+  Future<void> _fetchPosts() async {
+    if (isLoading || !_hasMoreData) {
+      return;
+    }
 
     setState(() {
-      _futureSharedPosts = _futureSharedPosts.then((existingPosts) => existingPosts + nextPage);
-      _isLoading = false;
+      isLoading = true;
     });
-  }
 
-  Future<void> loadData() async {
-    await Future.delayed(const Duration(seconds: 4));
-    if (_mounted) {
+    try {
+      final apiUrl = Uri.parse(
+          'https://wowpetspalace.com/dashboard/advertisment/getadvertisement/$_currentPage');
+      final response = await http.get(apiUrl);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> jsonList = jsonResponse['data'];
+
+        final List<SharedPostModel> newPosts =
+            jsonList.map((json) => SharedPostModel.fromJson(json)).toList();
+
+        if (newPosts.isEmpty) {
+          setState(() {
+            _hasMoreData = false;
+          });
+        } else {
+          setState(() {
+            _posts.addAll(newPosts);
+            _currentPage++;
+          });
+        }
+      } else {
+        // Handle error
+        if (kDebugMode) {
+          print('Failed to load posts - Status Code: ${response.statusCode}');
+        }
+        if (kDebugMode) {
+          print('Response Body: ${response.body}');
+        }
+      }
+    } catch (e) {
+      // Handle error
+      if (kDebugMode) {
+        print('Failed to load posts - Exception: $e');
+      }
+    } finally {
       setState(() {
-        enable = false;
+        isLoading = false;
       });
     }
   }
 
+  Future<void> _resetData() async {
+    setState(() {
+      _posts.clear();
+      _currentPage = 1;
+      _hasMoreData = true;
+    });
+
+    await _fetchPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("Building HomeScreen");
+    if (kDebugMode) {
+      print("Building HomeScreen");
+    }
     DataBaseHelper dbHelper = DataBaseHelper.instance;
     return BackdropScaffold(
       backLayerBackgroundColor: Colors.green.shade100,
@@ -236,154 +277,127 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: const BoxDecoration(
           color: Colors.white,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Text(
-                  AppLocalizations.of(context)!.name,
-                  style: TextStyle(
-                    color: Colors.green.shade800,
-                    fontSize: 19,
-                    fontWeight: FontWeight.bold,
-                  ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Text(
+                AppLocalizations.of(context)!.name,
+                style: TextStyle(
+                  color: Colors.green.shade800,
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Text(
-                  AppLocalizations.of(context)!.text,
-                  style: TextStyle(
-                    color: Colors.green.shade700,
-                    fontWeight: FontWeight.bold,
-                  ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Text(
+                AppLocalizations.of(context)!.text,
+                style: TextStyle(
+                  color: Colors.green.shade700,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.17,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            onTap: () {},
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 15),
-                              hintText: AppLocalizations.of(context)!.search,
-                              suffixIcon: InkWell(
-                                  onTap: () {},
-                                  child: const Icon(Icons.search)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.17,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          onTap: () {},
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
+                            hintText: AppLocalizations.of(context)!.search,
+                            suffixIcon: InkWell(
+                                onTap: () {}, child: const Icon(Icons.search)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _locationController,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 15),
-                                    hintText:
-                                        AppLocalizations.of(context)!.location,
-                                    prefixIcon: const Icon(Icons.location_on),
-                                    suffixIcon: const Icon(
-                                        Icons.location_searching_rounded),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _locationController,
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  hintText:
+                                      AppLocalizations.of(context)!.location,
+                                  prefixIcon: const Icon(Icons.location_on),
+                                  suffixIcon: const Icon(
+                                      Icons.location_searching_rounded),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 5),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green.shade700,
-                                ),
-                                onPressed: () {},
-                                child: const Text(
-                                  'Search',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                            ),
+                            const SizedBox(width: 5),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green.shade700,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                              onPressed: () {},
+                              child: const Text(
+                                'Search',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 90,
-                      child: enable
-                          ? _buildPetsCategoryShimmer()
-                          : _buildPetsCategoryList(),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        'Recommended for you',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    FutureBuilder<List<SharedPostModel>>(
-                      future: _futureSharedPosts,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return _buildPetsGridShimmer();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
-                          return _buildPetsGrid(snapshot.data!);
-                        } else {
-                          return const Text('No data available');
-                        }
-                      },
-                    )
-                  ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 90,
+              child: enable
+                  ? _buildPetsCategoryShimmer()
+                  : _buildPetsCategoryList(),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Recommended for you',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
+            ),
+            _buildList(),
+          ],
         ),
       ),
     );
@@ -421,6 +435,97 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
+  Widget _buildList() {
+    return Expanded(
+      child: _posts.isEmpty
+          ? _buildPetsGridShimmer() // Show shimmer effect if _posts is empty
+          : GridView.builder(
+              controller: _scrollController,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 2,
+                childAspectRatio: 0.6,
+              ),
+              scrollDirection: Axis.vertical,
+              itemCount: _posts.length + (_hasMoreData ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < _posts.length) {
+                  final post = _posts[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) {
+                            return HomeInfo(
+                              breedCategoryModel: post,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 3.0,
+                      shadowColor: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                            child: Image.network(
+                              "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
+                              width: double.infinity,
+                              height: 80, // Set the desired height
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              post.title.toString(),
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              post.description.toString(),
+                              maxLines: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '\$${post.price}',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return _hasMoreData
+                      ? const CircularProgressIndicator()
+                      : const Text('No more data');
+                }
+              },
+            ),
+    );
+  }
 }
 
 Widget _buildPetsCategoryShimmer() {
@@ -456,91 +561,6 @@ Widget _buildPetsCategoryShimmer() {
     ),
   );
 }
-
-Widget _buildPetsGrid(List<SharedPostModel> sharedPosts) {
-  return GridView.builder(
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3,
-      mainAxisSpacing: 2,
-      childAspectRatio: 0.6,
-    ),
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: sharedPosts.length,
-    itemBuilder: (context, index) {
-      SharedPostModel post = sharedPosts[index];
-
-      return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (ctx) {
-                return HomeInfo(
-                  breedCategoryModel: post,
-                );
-              },
-            ),
-          );
-        },
-        child: Card(
-          elevation: 3.0,
-          shadowColor: Colors.grey,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 90,
-                    child: Image.network(
-                      "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
-                      height: 50,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    post.title.toString(),
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    post.description.toString(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '\$${post.price}',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
-
 
 Widget _buildPetsGridShimmer() {
   return Shimmer.fromColors(
