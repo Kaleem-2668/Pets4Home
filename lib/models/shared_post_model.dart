@@ -1,4 +1,3 @@
-
 class SharedPostModel {
   int? id;
   String? title;
@@ -21,23 +20,23 @@ class SharedPostModel {
 
   SharedPostModel(
       {this.id,
-        this.title,
-        this.description,
-        this.price,
-        this.address,
-        this.latitude,
-        this.longitude,
-        this.city,
-        this.views,
-        this.advertisementType,
-        this.healthchecked,
-        this.verified,
-        this.status,
-        this.date,
-        this.categoryid,
-        this.userid,
-        this.imagePaths,
-        this.categoryTitle});
+      this.title,
+      this.description,
+      this.price,
+      this.address,
+      this.latitude,
+      this.longitude,
+      this.city,
+      this.views,
+      this.advertisementType,
+      this.healthchecked,
+      this.verified,
+      this.status,
+      this.date,
+      this.categoryid,
+      this.userid,
+      this.imagePaths,
+      this.categoryTitle});
 
   SharedPostModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -61,7 +60,7 @@ class SharedPostModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;
     data['title'] = title;
     data['description'] = description;
@@ -83,4 +82,3 @@ class SharedPostModel {
     return data;
   }
 }
-

@@ -228,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
             InkWell(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                    return FavoriteScreen();
+                    return const FavoriteScreen();
                   }));
                 },
                 child: const Center(
@@ -440,89 +440,101 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: _posts.isEmpty
           ? _buildPetsGridShimmer() // Show shimmer effect if _posts is empty
-          : GridView.builder(
-              controller: _scrollController,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 2,
-                childAspectRatio: 0.6,
-              ),
-              scrollDirection: Axis.vertical,
-              itemCount: _posts.length + (_hasMoreData ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _posts.length) {
-                  final post = _posts[index];
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) {
-                            return HomeInfo(
-                              breedCategoryModel: post,
-                            );
-                          },
+          : RefreshIndicator(
+              onRefresh: () async {
+                await _resetData();
+              },
+              child: GridView.builder(
+                controller: _scrollController,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 2,
+                  childAspectRatio: 0.6,
+                ),
+                scrollDirection: Axis.vertical,
+                itemCount: _posts.length + (_hasMoreData ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < _posts.length) {
+                    final post = _posts[index];
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) {
+                              return HomeInfo(
+                                breedCategoryModel: post,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 1,
+                        shadowColor: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      );
-                    },
-                    child: Card(
-                      elevation: 3.0,
-                      shadowColor: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                            child: Image.network(
-                              "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
-                              width: double.infinity,
-                              height: 80, // Set the desired height
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              post.title.toString(),
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                              child: Image.network(
+                                "https://wowpetspalace.com/dashboard/${post.imagePaths![0]}",
+                                width: double.infinity,
+                                height: 100, // Set the desired height
+                                fit: BoxFit.cover,
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              post.description.toString(),
-                              maxLines: 1,
+                            const SizedBox(
+                              height: 10,
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              '\$${post.price}',
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                post.title.toString(),
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                post.description.toString(),
+                                maxLines: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                '\$${post.price}',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  return _hasMoreData
-                      ? const CircularProgressIndicator()
-                      : const Text('No more data');
-                }
-              },
+                    );
+                  } else {
+                    return _hasMoreData
+                        ? Container(
+                            height: 40, // Adjust the height as needed
+                            width: 40, // Adjust the width as needed
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(),
+                          )
+                        : const SizedBox.shrink();
+                  }
+                },
+              ),
             ),
     );
   }

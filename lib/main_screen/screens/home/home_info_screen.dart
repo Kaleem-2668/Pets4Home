@@ -443,9 +443,12 @@ class _HomeInfoState extends State<HomeInfo> {
                       children: [
                         const Expanded(child: Text('Health checked')),
                         Expanded(
-                            child: Text(
-                              (widget.breedCategoryModel!.healthchecked == 1) ? 'Yes' : 'No',
-                            ),)
+                          child: Text(
+                            (widget.breedCategoryModel!.healthchecked == 1)
+                                ? 'Yes'
+                                : 'No',
+                          ),
+                        )
                       ],
                     ),
                     const Row(

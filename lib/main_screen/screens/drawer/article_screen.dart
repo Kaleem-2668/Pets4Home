@@ -36,6 +36,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   bool isLoading = false;
   bool reachedEnd = false; // Track if all pages have been loaded
   ScrollController _scrollController = ScrollController();
+  List<Articles> searchResults = [];
 
   @override
   void initState() {
@@ -97,21 +98,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
     }
   }
 
-  // void filterArticles(String query) {
-  //   if (query.isNotEmpty) {
-  //     List<ArticleModel> filteredArticles = articles
-  //         .where((article) =>
-  //         article.articles!.any((articleData) =>
-  //             articleData.title!.toLowerCase().contains(query.toLowerCase())))
-  //         .toList();
-  //
-  //     setState(() {
-  //       articles = filteredArticles;
-  //     });
-  //   } else {
-  //   }
-  // }
-
   void fetchCategoryData() async {
     try {
       List<CategoryModel> fetchedCategories =
@@ -153,51 +139,60 @@ class _ArticleScreenState extends State<ArticleScreen> {
   }
 
   Widget buildArticleList() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: reachedEnd
-                ? articleModel?.articles?.length ?? 0
-                : (articleModel?.articles?.length ?? 0) + 1,
-            itemBuilder: (context, index) {
-              if (index == (articleModel?.articles?.length ?? 0)) {
-                if (!reachedEnd) {
-                  return const Center(child: CircularProgressIndicator());
-                } else {
-                  return const SizedBox
-                      .shrink(); // Placeholder for the last loading indicator
-                }
-              }
+    List<Articles> articlesToDisplay =
+        searchResults.isNotEmpty ? searchResults : articleModel?.articles ?? [];
 
-              Articles article = articleModel!.articles![index];
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount:
+          reachedEnd ? articlesToDisplay.length : articlesToDisplay.length + 1,
+      itemBuilder: (context, index) {
+        if (index == articlesToDisplay.length) {
+          if (!reachedEnd) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
 
-              return InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (ctx) {
-                      return ArticleInfo(
-                          articleModelList: articleModel, selectedIndex: index);
-                    }),
-                  );
-                },
-                child: ListTile(
-                  title: Text(article.title ?? ''),
-                  subtitle: Text(article.description ?? '', maxLines: 2),
-                  leading: Image.network(
-                    "https://wowpetspalace.com/dashboard/${article.image?.toString() ?? ''}",
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
+        Articles article = articlesToDisplay[index];
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ArticleInfo(
+                  article: article,
+                ),
+              ),
+            );
+          },
+          child: Card(
+            elevation: 0.5,
+            child: ListTile(
+              title: Text(article.title ?? ''),
+              subtitle: Text(article.description ?? '', maxLines: 2),
+              leading: SizedBox(
+                height: 80,
+                width: 80,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        "https://wowpetspalace.com/dashboard/${article.image}",
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.fill,
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -225,7 +220,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   borderRadius: BorderRadius.circular(14),
                   child: CachedNetworkImage(
                     imageUrl:
-                        "https://wowpetspalace.com/dashboard/${categoryWise.image![0]}",
+                        "https://wowpetspalace.com/dashboard/${categoryWise.image}",
                     placeholder: (context, url) =>
                         const Center(child: CircularProgressIndicator()),
                     errorWidget: (context, url, error) =>
@@ -260,70 +255,71 @@ class _ArticleScreenState extends State<ArticleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextFormField(
-          controller: searchController,
-          style: const TextStyle(color: Colors.white, fontSize: 18.0),
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 15,
-              horizontal: 15,
-            ),
-            hintText: 'Search for your Article',
-            hintStyle: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
-            suffixIcon: const Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: Colors.white),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: Colors.white),
-            ),
+          title: TextFormField(
+        onChanged: (query) {
+          filterArticles(query);
+        },
+        controller: searchController,
+        style: const TextStyle(color: Colors.white, fontSize: 18.0),
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 15,
+            horizontal: 15,
+          ),
+          hintText: 'Search for your Article',
+          hintStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+          suffixIcon: const Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white),
           ),
         ),
-      ),
+      )),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            Stack(
-              children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    enableInfiniteScroll: true,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 4),
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 800),
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    enlargeCenterPage: true,
-                  ),
-                  items: [
-                    'images/slider_images/dogArt.jpg',
-                    'images/slider_images/slide_a.jpg',
-                    'images/slider_images/slideb.jpg',
-                  ].map((String item) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          child: Image.asset(
-                            item,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
+            Expanded(
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  enableInfiniteScroll: true,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 4),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
                 ),
-              ],
+                items: [
+                  'images/slider_images/dogArt.jpg',
+                  'images/slider_images/slide_a.jpg',
+                  'images/slider_images/slideb.jpg',
+                ].map((String item) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                        child: Image.asset(
+                          item,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
             ),
             const SizedBox(height: 20),
             FutureBuilder<List<CategoryModel>>(
@@ -377,9 +373,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               },
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: buildContent(),
-            ),
+            Expanded(child: buildContent()),
           ],
         ),
       ),
@@ -416,5 +410,23 @@ class _ArticleScreenState extends State<ArticleScreen> {
         );
       },
     );
+  }
+
+  void filterArticles(String query) {
+    if (query.isNotEmpty) {
+      List<Articles> filteredArticles = articleModel?.articles
+              ?.where((article) =>
+                  article.title!.toLowerCase().contains(query.toLowerCase()))
+              .toList() ??
+          [];
+
+      setState(() {
+        searchResults = filteredArticles;
+      });
+    } else {
+      setState(() {
+        searchResults.clear();
+      });
+    }
   }
 }
