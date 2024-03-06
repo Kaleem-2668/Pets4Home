@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_)=>ChangeLanguage()),
           ChangeNotifierProvider(create: (_)=>AuthViewModel()),
-          ChangeNotifierProvider(create: (_)=>UserViewModel()),
+          // ChangeNotifierProvider(create: (_)=>UserViewModel()),
         ],
         child: Consumer<ChangeLanguage>(
           builder: (context, provider, child){

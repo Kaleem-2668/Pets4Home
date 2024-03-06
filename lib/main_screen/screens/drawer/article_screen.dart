@@ -35,7 +35,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   int currentPage = 1;
   bool isLoading = false;
   bool reachedEnd = false; // Track if all pages have been loaded
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<Articles> searchResults = [];
 
   @override
@@ -211,37 +211,49 @@ class _ArticleScreenState extends State<ArticleScreen> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: SizedBox(
-                height: 80,
-                width: 80,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "https://wowpetspalace.com/dashboard/${categoryWise.image}",
-                    placeholder: (context, url) =>
-                        const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.fill,
+            child: InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                  return ArticleInfo(
+                      article: Articles(
+                      title: categoryWise.title,
+                      description: categoryWise.description,
+                      image: categoryWise.image),
+                  );
+                }));
+              },
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://wowpetspalace.com/dashboard/${categoryWise.image}",
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
-              ),
-              title: Text(
-                categoryWise.title.toString(),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                title: Text(
+                  categoryWise.title.toString(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              subtitle: Text(
-                categoryWise.description.toString(),
-                maxLines: 2,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
+                subtitle: Text(
+                  categoryWise.description.toString(),
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

@@ -16,7 +16,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-     final userPreference = Provider.of<UserViewModel>(context);
+     // final userPreference = Provider.of<UserViewModel>(context);
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -67,12 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               buildText('Privacy & Policy', () {}),
               buildText('Help', () {}),
               buildText('LogOut', () {
-                userPreference.removeUser().then((value) => Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                  return const LoginScreen();
-                })));
-
-
-
+                // userPreference.removeUser().then((value) => Navigator.push(context, MaterialPageRoute(builder: (ctx){
+                //   return const LoginScreen();
+                // })));
               }),
             ],
           ),

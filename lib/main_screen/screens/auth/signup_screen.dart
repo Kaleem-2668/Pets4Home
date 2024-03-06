@@ -133,11 +133,14 @@ class _SignUpState extends State<SignUp> {
                     errorText: _emailError,
                   ),
                   onChanged: (value) {
+                    value = value.trim(); // Trim the input value
                     setState(() {
+                      emailController.text = value; // Update the controller's text
                       _emailError = _validateEmail(value);
                     });
                   },
-                ),
+                )
+
               ),
               const SizedBox(height: 10),
               Padding(
@@ -155,9 +158,7 @@ class _SignUpState extends State<SignUp> {
                     errorText: _passwordError,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -168,11 +169,14 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   onChanged: (value) {
+                    value = value.trim(); // Trim the input value
                     setState(() {
+                      passwordController.text = value; // Update the controller's text
                       _passwordError = _validatePassword(value);
                     });
                   },
-                ),
+                )
+
               ),
               const SizedBox(height: 10),
               Padding(
@@ -190,9 +194,7 @@ class _SignUpState extends State<SignUp> {
                     errorText: _confirmPasswordError,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPassVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _isConfirmPassVisible ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -203,12 +205,14 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   onChanged: (value) {
+                    value = value.trim(); // Trim the input value
                     setState(() {
-                      _confirmPasswordError =
-                          _validateConfirmPassword(value);
+                      confirmController.text = value; // Update the controller's text
+                      _confirmPasswordError = _validateConfirmPassword(value);
                     });
                   },
-                ),
+                )
+
               ),
               const SizedBox(height: 20),
               ConstantButton(

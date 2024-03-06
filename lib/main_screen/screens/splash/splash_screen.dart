@@ -106,7 +106,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  SplashServices splashServices = SplashServices();
+  // SplashServices splashServices = SplashServices();
 
   @override
   void initState() {

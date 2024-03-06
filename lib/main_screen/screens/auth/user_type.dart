@@ -81,47 +81,50 @@ class _UserTypeState extends State<UserType> {
                       //   }
                       //
                       // ),
-                      TextFormField(
-                        controller: nameController,
-
-                        decoration: InputDecoration(
-                          labelText: 'First Name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        onFieldSubmitted: (value){
-                          FocusScope.of(context).requestFocus(lastNameFocus);
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                          return null;
-                        },
+                    TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      const SizedBox(
+                    ),
+                    onFieldSubmitted: (value) {
+                      value = value.trim(); // Trim the input value
+                      FocusScope.of(context).requestFocus(lastNameFocus);
+                    },
+                    validator: (value) {
+                      value = value!.trim(); // Trim the input value before validation
+                      if (value.isEmpty) {
+                        return 'Please enter your first name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
                         height: 10,
                       ),
-                      TextFormField(
-                        controller: lastNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Last Name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        onFieldSubmitted: (value){
-                          FocusScope.of(context).requestFocus();
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your last name';
-                          }
-                          return null;
-                        },
+                  TextFormField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    ],
+                    ),
+                    onFieldSubmitted: (value) {
+                      value = value.trim(); // Trim the input value
+                      FocusScope.of(context).requestFocus();
+                    },
+                    validator: (value) {
+                      value = value!.trim(); // Trim the input value before validation
+                      if (value.isEmpty) {
+                        return 'Please enter your last name';
+                      }
+                      return null;
+                    },
+                  ),
+                  ],
                   ),
                 ),
 

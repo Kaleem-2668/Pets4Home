@@ -75,11 +75,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     errorText: _emailError,
                   ),
                   onChanged: (value) {
+                    value = value.trim(); // Trim the input value
                     setState(() {
-                      _emailError = _validateEmail(value.trim());
+                      _emailController.text = value; // Update the controller's text
+                      _emailError = _validateEmail(value);
                     });
                   },
                 ),
+
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -95,9 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     errorText: _passwordError,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -108,11 +109,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   onChanged: (value) {
+                    value = value.trim(); // Trim the input value
                     setState(() {
-                      _passwordError = _validatePassword(value.trim());
+                      _passwordController.text = value; // Update the controller's text
+                      _passwordError = _validatePassword(value);
                     });
                   },
                 ),
+
               ),
               const SizedBox(height: 20,),
               InkWell(
@@ -132,8 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ConstantButton(
 
                   text: 'SigIn',
-                  color: Colors.black,
-
+                  color: Colors.white,
                   voidCallback: () {
                     Map data ={
                       'email':_emailController.text.toString(),
@@ -142,7 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     authViewModel.loginApi(data, context);
                   },
                   buttonColor: Colors.green),
-              const SizedBox(height: 20,),
             ],
           ),
         ),
